@@ -1,0 +1,15 @@
+{
+  "name": "한성대 일학습병행",
+  "short_name": "한성대학습",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#56CCF2",
+  "theme_color": "#2F80ED",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
