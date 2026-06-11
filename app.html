@@ -1261,27 +1261,9 @@ async function initPushNotification() {
         console.log('권한 요청 시작');
         await window.OneSignal.Notifications.requestPermission();
         console.log('권한 요청 완료');
-        
-        // 권한 허용 후 학번 등록
-        if (currentUser && currentUser.studentId) {
-          try {
-            await window.OneSignal.login(String(currentUser.studentId));
-            console.log('학번 등록 완료');
-          } catch(loginError) {
-            console.log('학번 등록 오류:', loginError);
-          }
-        }
       }, 3000);
     } else {
-      // 이미 권한 있으면 바로 학번 등록
-      if (currentUser && currentUser.studentId) {
-        try {
-          await window.OneSignal.login(String(currentUser.studentId));
-          console.log('학번 등록 완료');
-        } catch(loginError) {
-          console.log('학번 등록 오류:', loginError);
-        }
-      }
+      console.log('이미 권한 있음');
     }
 
   } catch(e) {
