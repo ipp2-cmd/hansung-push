@@ -1384,9 +1384,8 @@ window.onload = function() {
       const d = new Date(dateStr);
       return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
     }
-  </script>
 
-function showInstallGuideScreen() {
+    function showInstallGuideScreen() {
   // 스플래시 즉시 제거
   var splash = document.getElementById('splash-screen');
   if (splash) {
@@ -1545,6 +1544,8 @@ function showInstallGuideScreen() {
   `;
 }
   
+  </script>
+
   <!-- </body> 태그 바로 위에 추가 -->
 <script>
 // ========== OneSignal 푸시 알림 ==========
