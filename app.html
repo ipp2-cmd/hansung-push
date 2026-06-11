@@ -1239,19 +1239,15 @@ async function initPushNotification() {
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      console.log('OneSignal 초기화 시도');
+      console.log('OneSignal 준비됨');
 
-      await OneSignal.init({
-        appId: "6f3b4e8a-d211-4ecd-9e0e-045900f10001"
-      });
-
-      console.log('OneSignal 초기화 완료');
-
+      // 학번 등록
       if (currentUser && currentUser.studentId) {
         await OneSignal.login(String(currentUser.studentId));
         console.log('학번 등록 완료');
       }
 
+      // 권한 확인
       var permission = OneSignal.Notifications.permission;
       console.log('현재 권한:', permission);
 
@@ -1260,6 +1256,8 @@ async function initPushNotification() {
           console.log('권한 요청 시작');
           await OneSignal.Slidedown.promptPush();
         }, 3000);
+      } else {
+        console.log('이미 권한 있음');
       }
     });
 
