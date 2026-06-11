@@ -1234,8 +1234,9 @@ window.onload = function() {
   document.body.style.margin = '0';
   document.body.style.padding = '0';
 
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  var isAndroid = /Android/.test(navigator.userAgent);
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var isAndroid = /Android/.test(navigator.userAgent);
 
   var iosSteps = `
     <div class="step">
