@@ -1237,34 +1237,31 @@ async function initPushNotification() {
   try {
     console.log('푸시 초기화 시작');
 
-    var waitCount = 0;
-    while (!window.OneSignal || !window.OneSignal.Notifications) {
-      await new Promise(function(resolve) {
-        setTimeout(resolve, 500);
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      console.log('OneSignal 초기화 시도');
+
+      await OneSignal.init({
+        appId: "여기에_새_APP_ID"
       });
-      waitCount++;
-      console.log('OneSignal 대기중...', waitCount);
-      if (waitCount > 20) {
-        console.log('OneSignal 타임아웃');
-        return;
+
+      console.log('OneSignal 초기화 완료');
+
+      if (currentUser && currentUser.studentId) {
+        await OneSignal.login(String(currentUser.studentId));
+        console.log('학번 등록 완료');
       }
-    }
 
-    console.log('OneSignal 준비됨');
+      var permission = OneSignal.Notifications.permission;
+      console.log('현재 권한:', permission);
 
-    // 권한 확인
-    var permission = window.OneSignal.Notifications.permission;
-    console.log('현재 권한:', permission);
-
-    if (!permission) {
-      setTimeout(async function() {
-        console.log('권한 요청 시작');
-        await window.OneSignal.Notifications.requestPermission();
-        console.log('권한 요청 완료');
-      }, 3000);
-    } else {
-      console.log('이미 권한 있음');
-    }
+      if (!permission) {
+        setTimeout(async function() {
+          console.log('권한 요청 시작');
+          await OneSignal.Slidedown.promptPush();
+        }, 3000);
+      }
+    });
 
   } catch(e) {
     console.log('푸시 초기화 실패:', e);
