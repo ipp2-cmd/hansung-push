@@ -1497,5 +1497,22 @@ async function initPushNotification() {
     </div>
   </div>
 </div>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(reg) {
+        // 새 버전 감지시 자동 업데이트
+        reg.onupdatefound = function() {
+          const newWorker = reg.installing;
+          newWorker.onstatechange = function() {
+            if (newWorker.state === 'activated') {
+              window.location.reload();
+            }
+          };
+        };
+      });
+  }
+</script>
+  
 </body>
 </html>
