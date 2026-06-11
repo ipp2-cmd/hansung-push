@@ -686,9 +686,15 @@
     }
 
     // ========== 초기화 ==========
-    window.onload = function() {
-       var isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
-                    window.navigator.standalone === true;
+window.onload = function() {
+  // ✅ PWA 설치 여부 체크 수정
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  var isIOSStandalone = window.navigator.standalone === true;
+  var isInstalled = isStandalone || isIOSStandalone;
+  
+  console.log('display-mode standalone:', isStandalone);
+  console.log('navigator.standalone:', window.navigator.standalone);
+  console.log('isInstalled:', isInstalled);
   
   if (!isInstalled) {
     window.location.href = './install.html';
