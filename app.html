@@ -1318,11 +1318,7 @@ function previewFile(index) {
     splash.style.display = 'none';  // 추가!
     splash.remove();
   }
-function previewFile(previewUrl, title) {
-  document.getElementById('previewTitle').textContent = title;
-  document.getElementById('previewFrame').src = previewUrl;
-  document.getElementById('filePreviewModal').classList.add('show');
-}
+
   // 바디 전체를 설치 안내로 교체
   document.body.style.margin = '0';
   document.body.style.padding = '0';
