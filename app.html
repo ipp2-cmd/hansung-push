@@ -690,12 +690,6 @@ window.onload = function() {
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
   var isIOSStandalone = window.navigator.standalone === true;
   var isInstalled = isStandalone || isIOSStandalone;
-
-  // ✅ 임시 로그 추가
-  alert('standalone: ' + isStandalone + 
-        '\niOS standalone: ' + isIOSStandalone + 
-        '\nisInstalled: ' + isInstalled);
-
   
   if (!isInstalled) {
     // install.html로 이동 대신
@@ -1259,7 +1253,10 @@ window.onload = function() {
 function showInstallGuideScreen() {
   // 스플래시 즉시 제거
   var splash = document.getElementById('splash-screen');
-  if (splash) splash.remove();
+  if (splash) {
+    splash.style.display = 'none';  // 추가!
+    splash.remove();
+  }
 
   // 바디 전체를 설치 안내로 교체
   document.body.style.margin = '0';
