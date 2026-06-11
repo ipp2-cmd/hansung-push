@@ -1257,9 +1257,13 @@ window.onload = function() {
   </script>
 
 function showInstallGuideScreen() {
-  // 스플래시 숨기기
-  const splash = document.getElementById('splash-screen');
+  // 스플래시 즉시 제거
+  var splash = document.getElementById('splash-screen');
   if (splash) splash.remove();
+
+  // 바디 전체를 설치 안내로 교체
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
 
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   var isAndroid = /Android/.test(navigator.userAgent);
