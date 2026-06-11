@@ -343,9 +343,19 @@
       appId: "6f3b4e8a-d211-4ecd-9e0e-045900f10001"
     });
     console.log('OneSignal 자동 초기화 완료');
+
+    // 권한 확인 및 요청도 여기서!
+    var permission = OneSignal.Notifications.permission;
+    console.log('현재 권한:', permission);
+
+    if (!permission) {
+      setTimeout(async function() {
+        console.log('권한 요청 시작');
+        await OneSignal.Slidedown.promptPush();
+      }, 3000);
+    }
   });
 </script>
-
 </head>
 <body>
 
@@ -1241,23 +1251,10 @@ async function initPushNotification() {
     OneSignalDeferred.push(async function(OneSignal) {
       console.log('OneSignal 준비됨');
 
-      // 학번 등록
+      // 학번만 등록
       if (currentUser && currentUser.studentId) {
         await OneSignal.login(String(currentUser.studentId));
         console.log('학번 등록 완료');
-      }
-
-      // 권한 확인
-      var permission = OneSignal.Notifications.permission;
-      console.log('현재 권한:', permission);
-
-      if (!permission) {
-        setTimeout(async function() {
-          console.log('권한 요청 시작');
-          await OneSignal.Slidedown.promptPush();
-        }, 3000);
-      } else {
-        console.log('이미 권한 있음');
       }
     });
 
