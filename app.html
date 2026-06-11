@@ -1086,7 +1086,7 @@ function displayFileList(files, targetId) {
 }
 
 function previewFile(index) {
-    alert('미리보기 클릭: ' + index); // ✅ 테스트용
+  
   const file = window._fileList[index];
   const previewUrl = file['파일URL'].replace('/view', '/preview');
   document.getElementById('previewTitle').textContent = file['제목'];
