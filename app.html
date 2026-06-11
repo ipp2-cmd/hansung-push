@@ -713,26 +713,19 @@ window.onload = function() {
   var isIOSStandalone = window.navigator.standalone === true;
   var isInstalled = isStandalone || isIOSStandalone;
 
-  // ✅ URL에 ?test=1 붙이면 설치 안내 건너뜀
   const isTest = new URLSearchParams(window.location.search).get('test');
 
+  // 스플래시 즉시 제거
+  var splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.style.display = 'none';
+    splash.remove();
+  }
+
   if (!isInstalled && !isTest) {
-    var splash = document.getElementById('splash-screen');
-    if (splash) {
-      splash.style.display = 'none';
-      splash.remove();
-    }
     showInstallGuideScreen();
     return;
   }
-
-  setTimeout(() => {
-    const splash = document.getElementById('splash-screen');
-    if (splash) {
-      splash.classList.add('hidden');
-      setTimeout(() => splash.remove(), 300);
-    }
-  }, 300);
   
   const savedUser = localStorage.getItem('user');
   if (savedUser) {
