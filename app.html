@@ -1237,27 +1237,38 @@ async function initPushNotification() {
   try {
     console.log('푸시 초기화 시작');
 
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      console.log('OneSignal 준비됨');
-
-      // init 제거! 이미 자동으로 됨
-      // 학번만 등록
-      if (currentUser && currentUser.studentId) {
-        await OneSignal.login(String(currentUser.studentId));
-        console.log('학번 등록 완료');
+    // OneSignal 준비될때까지 대기
+    var waitCount = 0;
+    while (!window.OneSignal || !window.OneSignal.User) {
+      await new Promise(function(resolve) {
+        setTimeout(resolve, 500);
+      });
+      waitCount++;
+      console.log('OneSignal 대기중...', waitCount);
+      if (waitCount > 20) {
+        console.log('OneSignal 타임아웃');
+        return;
       }
+    }
 
-      var permission = OneSignal.Notifications.permission;
-      console.log('현재 권한:', permission);
+    console.log('OneSignal 준비됨');
 
-      if (!permission) {
-        setTimeout(async function() {
-          console.log('권한 요청 시작');
-          await OneSignal.Slidedown.promptPush();
-        }, 3000);
-      }
-    });
+    // 학번 등록
+    if (currentUser && currentUser.studentId) {
+      await window.OneSignal.login(String(currentUser.studentId));
+      console.log('학번 등록 완료');
+    }
+
+    // 권한 확인
+    var permission = window.OneSignal.Notifications.permission;
+    console.log('현재 권한:', permission);
+
+    if (!permission) {
+      setTimeout(async function() {
+        console.log('권한 요청 시작');
+        await window.OneSignal.Notifications.requestPermission();
+      }, 3000);
+    }
 
   } catch(e) {
     console.log('푸시 초기화 실패:', e);
