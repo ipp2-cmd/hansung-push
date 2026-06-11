@@ -713,10 +713,10 @@ window.onload = function() {
   var isIOSStandalone = window.navigator.standalone === true;
   var isInstalled = isStandalone || isIOSStandalone;
 
-  if (!isInstalled) {
   // ✅ URL에 ?test=1 붙이면 설치 안내 건너뜀
-      const isTest = new URLSearchParams(window.location.search).get('test');
-  if (!isTest) {
+  const isTest = new URLSearchParams(window.location.search).get('test');
+
+  if (!isInstalled && !isTest) {
     var splash = document.getElementById('splash-screen');
     if (splash) {
       splash.style.display = 'none';
@@ -747,7 +747,6 @@ window.onload = function() {
     showLoginModal();
   }
 };
-
     // ========== API 호출 ==========
     async function callAPI(action, data = {}) {
       try {
