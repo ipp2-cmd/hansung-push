@@ -1047,39 +1047,45 @@ function showCalendar() {
       }
     }
 
-    function displayFileList(files, targetId) {
-      const target = document.getElementById(targetId);
-      if (!target) return;
-      
-      if (files.length === 0) {
-        target.innerHTML = '<div class="empty">등록된 자료가 없습니다</div>';
-        return;
-      }
-      
-      let html = '';
-      files.forEach(file => {
-        html += `
-          <div class="list-item">
-            <div class="item-title">📄 ${file['제목']}</div>
-            <div style="font-size: 13px; color: #7f8c8d; margin: 6px 0;">${file['설명']}</div>
-            <div class="item-meta">
-              <span class="badge-category">${file['카테고리']}</span>
-              <span>${formatDate(file['업로드일'])}</span>
-              <span>⬇ ${file['다운로드수']}</span>
-            </div>
-            <div style="margin-top: 10px;">
-              <a href="${file['파일URL']}" target="_blank"
-                 class="btn btn-outline"
-                 style="padding: 8px 16px; font-size: 14px; display: inline-block; text-decoration: none;">
-                다운로드
-              </a>
-            </div>
-          </div>
-        `;
-      });
-      target.innerHTML = html;
-    }
-
+function displayFileList(files, targetId) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  
+  if (files.length === 0) {
+    target.innerHTML = '<div class="empty">등록된 자료가 없습니다</div>';
+    return;
+  }
+  
+  let html = '';
+  files.forEach(file => {
+    const previewUrl = file['파일URL'].replace('/view', '/preview');
+    
+    html += `
+      <div class="list-item">
+        <div class="item-title">📄 ${file['제목']}</div>
+        <div style="font-size: 13px; color: #7f8c8d; margin: 6px 0;">${file['설명']}</div>
+        <div class="item-meta">
+          <span class="badge-category">${file['카테고리']}</span>
+          <span>${formatDate(file['업로드일'])}</span>
+          <span>⬇ ${file['다운로드수']}</span>
+        </div>
+        <div style="margin-top: 10px; display: flex; gap: 8px;">
+          <button onclick="previewFile('${previewUrl}', '${file['제목']}')"
+                  class="btn btn-primary"
+                  style="padding: 8px 16px; font-size: 14px;">
+            👁 미리보기
+          </button>
+          <a href="${file['파일URL']}" target="_blank"
+             class="btn btn-outline"
+             style="padding: 8px 16px; font-size: 14px; text-decoration: none;">
+            ⬇ 다운로드
+          </a>
+        </div>
+      </div>
+    `;
+  });
+  target.innerHTML = html;
+}
     // ========== 상담 ==========
     async function showConsultingList() {
       document.getElementById('mainContent').innerHTML = `
