@@ -691,6 +691,12 @@ window.onload = function() {
   var isIOSStandalone = window.navigator.standalone === true;
   var isInstalled = isStandalone || isIOSStandalone;
 
+  // ✅ 임시 로그 추가
+  alert('standalone: ' + isStandalone + 
+        '\niOS standalone: ' + isIOSStandalone + 
+        '\nisInstalled: ' + isInstalled);
+
+  
   if (!isInstalled) {
     // install.html로 이동 대신
     // app.html 안에서 설치 안내 표시
