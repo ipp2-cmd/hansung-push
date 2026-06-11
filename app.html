@@ -433,7 +433,11 @@
           </div>
           <div class="form-group">
             <label>학부(트랙) *</label>
-            <input type="text" class="form-control" id="reg_department" placeholder="예: 경영학부" required>
+            <input type="text" class="form-control" id="reg_department" placeholder="예: 컴퓨터공학부" required>
+          </div>
+          <div class="form-group">
+          <label>학습기업명 *</label>
+          <input type="text" class="form-control" id="reg_company" placeholder="예: 한성기업((주)등은 제외하고 회사이름만 적어주세요" required>
           </div>
           <div class="form-group">
             <label>연락처 *</label>
@@ -767,9 +771,9 @@ window.onload = function() {
       const password = document.getElementById('reg_password').value;
       const passwordConfirm = document.getElementById('reg_password_confirm').value;
       const department = document.getElementById('reg_department').value.trim();
+      const company = document.getElementById('reg_company').value.trim();  // ✅ 추가
       const phone = document.getElementById('reg_phone').value.trim();
       const email = document.getElementById('reg_email').value.trim();
-      const alarm = document.getElementById('reg_alarm').checked;
       
       if (!name || !studentId || !password || !department || !phone || !email) {
         alert('필수 항목을 모두 입력해주세요');
@@ -784,7 +788,7 @@ window.onload = function() {
         return;
       }
       
-      const result = await callAPI('register', { name, studentId, password, department, phone, email, alarm });
+      const result = await callAPI('register', { name, studentId, password, department, phone, email });
       
       if (result.success) {
         alert(result.message + '\n로그인 화면으로 이동합니다.');
