@@ -1467,5 +1467,19 @@ async function initPushNotification() {
   }
 }
 </script>
+  <!-- 파일 미리보기 모달 -->
+<div id="filePreviewModal" class="modal">
+  <div class="modal-content" style="max-width: 800px; width: 95%;">
+    <div class="modal-header">
+      <h3 id="previewTitle">미리보기</h3>
+      <button class="modal-close" onclick="closeModal('filePreviewModal')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 0;">
+      <iframe id="previewFrame" 
+              style="width: 100%; height: 70vh; border: none;">
+      </iframe>
+    </div>
+  </div>
+</div>
 </body>
 </html>
