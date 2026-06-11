@@ -687,19 +687,17 @@
 
     // ========== 초기화 ==========
 window.onload = function() {
-  // ✅ PWA 설치 여부 체크 수정
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
   var isIOSStandalone = window.navigator.standalone === true;
   var isInstalled = isStandalone || isIOSStandalone;
-  
-  console.log('display-mode standalone:', isStandalone);
-  console.log('navigator.standalone:', window.navigator.standalone);
-  console.log('isInstalled:', isInstalled);
-  
+
   if (!isInstalled) {
-    window.location.href = './install.html';
+    // install.html로 이동 대신
+    // app.html 안에서 설치 안내 표시
+    showInstallGuideScreen();
     return;
   }
+
   setTimeout(() => {
     const splash = document.getElementById('splash-screen');
     if (splash) {
@@ -711,7 +709,6 @@ window.onload = function() {
   const savedUser = localStorage.getItem('user');
   if (savedUser) {
     try {
-      // JSON 파싱 실패 대비 try-catch 추가
       currentUser = JSON.parse(savedUser);
       switchTab(null, 'home');
     } catch(e) {
