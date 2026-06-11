@@ -1,7 +1,7 @@
 {
   "name": "한성대 일학습병행",
   "short_name": "한성대학습",
-  "start_url": "/",
+  "start_url": "/hansung-push/",
   "display": "standalone",
   "background_color": "#56CCF2",
   "theme_color": "#2F80ED",
