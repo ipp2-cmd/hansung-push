@@ -2,50 +2,11 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=./app.html">
 </head>
 <body>
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  console.log('GitHub Pages 로드됨');
-
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    console.log('OneSignal 초기화 시작');
-
-    try {
-      await OneSignal.init({
-        appId: "c714ca49-45e2-4da5-8641-38615ea66356"
-      });
-      console.log('OneSignal 초기화 완료');
-    } catch(e) {
-      console.log('OneSignal 초기화 실패:', e);
-    }
-
-    window.addEventListener('message', async function(event) {
-      console.log('메시지 수신:', event.data);
-
-      if (event.data && event.data.type === 'SET_USER_ID') {
-        console.log('학번 설정:', event.data.studentId);
-        await OneSignal.login(String(event.data.studentId));
-      }
-
-      if (event.data && event.data.type === 'REQUEST_PUSH') {
-        console.log('권한 요청 시작');
-        var permission = OneSignal.Notifications.permission;
-        console.log('현재 권한:', permission);
-        if (!permission) {
-          await OneSignal.Slidedown.promptPush();
-        }
-        event.source.postMessage({
-          type: 'PUSH_RESULT',
-          permission: OneSignal.Notifications.permission
-        }, '*');
-      }
-    });
-
-    console.log('부모창에 준비완료 전송');
-    window.parent.postMessage({ type: 'ONESIGNAL_READY' }, '*');
-  });
-</script>
+  <script>
+    window.location.href = './app.html';
+  </script>
 </body>
 </html>
