@@ -936,17 +936,6 @@ window.onload = function() {
     document.getElementById('recentFiles').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
   }
 }
-      const noticesResult = await callAPI('getNotices');
-      if (noticesResult.success) {
-        displayNoticeList(noticesResult.data.slice(0, 3), 'recentNotices');
-      }
-      
-      const filesResult = await callAPI('getFiles');
-      if (filesResult.success) {
-        displayFileList(filesResult.data.slice(0, 3), 'recentFiles');
-      }
-    }
-
     // ========== 공지사항 ==========
     async function showNotices() {
       document.getElementById('mainContent').innerHTML = `
