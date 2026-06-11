@@ -750,7 +750,7 @@ window.onload = function() {
         return await response.json();
       } catch(error) {
         console.error('API Error:', error);
-        alert('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+       // alert('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
         return { success: false, message: error.message };
       }
     }
