@@ -184,20 +184,30 @@
 
   </div>
 
-  <script>
-    // 기기 감지
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    var isAndroid = /Android/.test(navigator.userAgent);
+<!-- install.html의 각 step 4 부분 수정 -->
+<!-- 그리고 맨 아래 script 수정 -->
 
-    if (isIOS) {
-      document.getElementById('iosSection').style.display = 'block';
-    } else if (isAndroid) {
-      document.getElementById('androidSection').style.display = 'block';
-    } else {
-      // PC인 경우
-      document.getElementById('iosSection').style.display = 'block';
-      document.getElementById('androidSection').style.display = 'block';
-    }
-  </script>
+<script>
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isAndroid = /Android/.test(navigator.userAgent);
+
+  if (isIOS) {
+    document.getElementById('iosSection').style.display = 'block';
+  } else if (isAndroid) {
+    document.getElementById('androidSection').style.display = 'block';
+  } else {
+    document.getElementById('iosSection').style.display = 'block';
+    document.getElementById('androidSection').style.display = 'block';
+  }
+
+  // ✅ 이 코드 추가!
+  // install.html에서 app.html URL로 변경
+  // 주소창은 app.html로 보이게
+  window.history.replaceState(
+    null, 
+    '', 
+    './app.html'
+  );
+</script>
 </body>
 </html>
