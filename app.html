@@ -687,6 +687,13 @@
 
     // ========== 초기화 ==========
     window.onload = function() {
+       var isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                    window.navigator.standalone === true;
+  
+  if (!isInstalled) {
+    window.location.href = './install.html';
+    return;
+  }
   setTimeout(() => {
     const splash = document.getElementById('splash-screen');
     if (splash) {
