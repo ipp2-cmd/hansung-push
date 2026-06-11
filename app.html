@@ -692,8 +692,13 @@ window.onload = function() {
   var isInstalled = isStandalone || isIOSStandalone;
   
   if (!isInstalled) {
-    // install.html로 이동 대신
-    // app.html 안에서 설치 안내 표시
+   // 스플래시 먼저 제거
+    var splash = document.getElementById('splash-screen');
+    if (splash) {
+      splash.style.display = 'none';
+      splash.remove();
+    }
+    // 설치 안내 표시
     showInstallGuideScreen();
     return;
   }
