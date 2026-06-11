@@ -84,7 +84,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="한성대 일학습">
   
-  <link rel="manifest" href="?page=manifest">
+  <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
@@ -1228,39 +1228,15 @@ async function initPushNotification() {
   try {
     console.log('푸시 초기화 시작');
 
-    // SDK 로드 대기
-    var waitCount = 0;
-    while (typeof window.OneSignalDeferred === 'undefined') {
-      await new Promise(function(resolve) { 
-        setTimeout(resolve, 500); 
-      });
-      waitCount++;
-      console.log('SDK 로드 대기중...', waitCount);
-      if (waitCount > 10) {
-        console.log('SDK 로드 타임아웃');
-        return;
-      }
-    }
-
-    console.log('SDK 로드 확인됨');
-
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       console.log('OneSignal 초기화 시도');
 
-      try {
-        await OneSignal.init({
-          appId: "bb99bbef-e150-44a6-8589-6cc08c32535e",
-          serviceWorkerParam: {
-            scope: "/"
-          },
-          serviceWorkerPath: "https://ipp2-cmd.github.io/hansung-push/OneSignalSDKWorker.js"
-        });
-        console.log('OneSignal 초기화 완료');
-      } catch(initError) {
-        console.log('OneSignal 초기화 오류:', initError);
-        return;
-      }
+      await OneSignal.init({
+        appId: "여기에_새_APP_ID"
+      });
+
+      console.log('OneSignal 초기화 완료');
 
       if (currentUser && currentUser.studentId) {
         await OneSignal.login(String(currentUser.studentId));
