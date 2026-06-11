@@ -785,7 +785,7 @@ window.onload = function() {
         return;
       }
       
-      const result = await callAPI('register', { name, studentId, password, department, phone, email });
+      const result = await callAPI('register', { name, studentId, password, department, company, phone, email });
       
       if (result.success) {
         alert(result.message + '\n로그인 화면으로 이동합니다.');
