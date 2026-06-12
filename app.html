@@ -1561,10 +1561,24 @@ async function requestPushPermission() {
   try {
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.Slidedown.promptPush();
+      
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      
+      if (isIOS) {
+        // ✅ iOS는 requestPermission 사용
+        const permission = await OneSignal.Notifications.requestPermission();
+        console.log('iOS 알림 허용 결과:', permission);
+      } else {
+        // ✅ Android는 Slidedown 사용
+        await OneSignal.Slidedown.promptPush({force: true});
+        console.log('Android 알림 요청 완료');
+      }
+      
       setTimeout(() => checkPushStatus(), 2000);
     });
   } catch(e) {
+    console.log('알림 설정 오류:', e);
     alert('알림 설정 중 오류가 발생했습니다');
   }
 }
