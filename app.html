@@ -851,22 +851,14 @@ window.onload = function() {
       }
     }
 
-    function logout() {
-      if (confirm('로그아웃 하시겠습니까?')) {
-        currentUser = null;
-        localStorage.removeItem('user');
-        document.getElementById('mainContent').innerHTML = '';
-        showLoginModal();
-      }
-      if (result.success) {
-  currentUser = result.data;
-  localStorage.setItem('user', JSON.stringify(currentUser));
-  closeModal('loginModal');
-  initPushNotification();
-  updateMyBadge(); // ✅ 추가
-  switchTab(null, 'home');
+function logout() {
+  if (confirm('로그아웃 하시겠습니까?')) {
+    currentUser = null;
+    localStorage.removeItem('user');
+    document.getElementById('mainContent').innerHTML = '';
+    showLoginModal();
+  }
 }
-    }
 
     // ========== 탭 전환 ==========
    function switchTab(event, tab) {
