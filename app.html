@@ -1118,31 +1118,6 @@ async function showFiles() {
   document.getElementById('mainContent').innerHTML = `
     <div class="card">
       <h3>📚 자료실</h3>
-      
-      <!-- 카테고리 탭 -->
-      <div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto;">
-        <button onclick="filterFiles('전체')" id="tab_전체"
-                style="padding: 8px 16px; border-radius: 20px; border: none; cursor: pointer;
-                       background: #3498db; color: white; font-weight: 600; white-space: nowrap;">
-          전체
-        </button>
-        <button onclick="filterFiles('외부평가')" id="tab_외부평가"
-                style="padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; 
-                       cursor: pointer; background: white; color: #2c3e50; white-space: nowrap;">
-          📝 외부평가
-        </button>
-        <button onclick="filterFiles('학습모듈')" id="tab_학습모듈"
-                style="padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; 
-                       cursor: pointer; background: white; color: #2c3e50; white-space: nowrap;">
-          📖 학습모듈
-        </button>
-        <button onclick="filterFiles('안내자료 및 기타')" id="tab_안내자료및기타"
-                style="padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; 
-                       cursor: pointer; background: white; color: #2c3e50; white-space: nowrap;">
-          📋 안내자료 및 기타
-        </button>
-      </div>
-      
       <div id="fileList"><div class="loading">로딩중...</div></div>
     </div>
   `;
@@ -1154,48 +1129,65 @@ async function showFiles() {
 
   if (cached && !isExpired) {
     window._filesData = JSON.parse(cached);
-    filterFiles('전체');
   } else {
     const result = await callAPI('getFiles');
     if (result.success) {
       localStorage.setItem('cache_files', JSON.stringify(result.data));
       localStorage.setItem('cache_files_time', Date.now().toString());
       window._filesData = result.data;
-      filterFiles('전체');
     } else {
       document.getElementById('fileList').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
+      return;
     }
   }
+
+  // 폴더형 카테고리 목록 표시
+  showFileCategories();
 }
 
-function filterFiles(category) {
-  // 탭 스타일 변경
-  const tabs = {
-    '전체': 'tab_전체',
-    '외부평가': 'tab_외부평가',
-    '학습모듈': 'tab_학습모듈',
-    '안내자료 및 기타': 'tab_안내자료및기타'
-  };
+function showFileCategories() {
+  const target = document.getElementById('fileList');
+  
+  const categories = [
+    { name: '외부평가', icon: '📝' },
+    { name: '학습모듈', icon: '📖' },
+    { name: '안내자료 및 기타', icon: '📋' }
+  ];
 
-  Object.keys(tabs).forEach(cat => {
-    const tab = document.getElementById(tabs[cat]);
-    if (tab) {
-      if (cat === category) {
-        tab.style.background = '#3498db';
-        tab.style.color = 'white';
-        tab.style.border = 'none';
-      } else {
-        tab.style.background = 'white';
-        tab.style.color = '#2c3e50';
-        tab.style.border = '1px solid #ddd';
-      }
-    }
+  let html = '';
+  categories.forEach(cat => {
+    const count = window._filesData.filter(f => f['카테고리'] === cat.name).length;
+    html += `
+      <div class="list-item" onclick="showFilesByCategory('${cat.name}', '${cat.icon}')"
+           style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 40px;">${cat.icon}</div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; font-size: 16px; color: #2c3e50;">${cat.name}</div>
+          <div style="font-size: 13px; color: #95a5a6; margin-top: 4px;">총 ${count}개</div>
+        </div>
+        <div style="font-size: 20px; color: #95a5a6;">›</div>
+      </div>
+    `;
   });
 
-  // 데이터 필터링
-  const files = category === '전체' ?
-    window._filesData :
-    window._filesData.filter(f => f['카테고리'] === category);
+  target.innerHTML = html;
+}
+
+function showFilesByCategory(category, icon) {
+  const files = window._filesData.filter(f => f['카테고리'] === category);
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <button onclick="showFiles()" 
+                style="background: none; border: none; font-size: 20px; cursor: pointer;">
+          ←
+        </button>
+        <h3 style="margin: 0;">${icon} ${category}</h3>
+      </div>
+      <div id="fileList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
 
   displayFileList(files, 'fileList');
 }
