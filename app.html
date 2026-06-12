@@ -1923,13 +1923,7 @@ async function initPushNotification() {
       if (currentUser && currentUser.studentId) {
         await OneSignal.login(String(currentUser.studentId));
         console.log('학번 등록 완료');
-      }
-      
-      // ✅ 푸시 알림 클릭 이벤트
-      OneSignal.Notifications.addEventListener('click', function(e) {
-        alert('클릭 데이터: ' + JSON.stringify(e.notification));
-      });
-
+      }   
     });
 
   } catch(e) {
