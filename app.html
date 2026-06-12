@@ -1699,7 +1699,10 @@ function markNotificationRead(id) {
   
   if (unreadCount > 0) {
     badge.style.display = 'flex';
-    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+    badge.textContent = unreadCount;
+    // ✅ 숫자 크기에 따라 배지 너비 자동 조정
+    badge.style.width = unreadCount > 9 ? 'auto' : '16px';
+    badge.style.padding = unreadCount > 9 ? '0 4px' : '0';
   } else {
     badge.style.display = 'none';
   }
