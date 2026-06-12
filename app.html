@@ -1679,20 +1679,7 @@ function markNotificationRead(id) {
       document.getElementById(modalId).classList.remove('show');
     }
 
-    function formatDate(dateStr) {
-      if (!dateStr) return '';
-      const d = new Date(dateStr);
-      return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    }
-
-    function showInstallGuideScreen() {
-  // 스플래시 즉시 제거
-  var splash = document.getElementById('splash-screen');
-  if (splash) {
-    splash.style.display = 'none';  // 추가!
-    splash.remove();
-  }
-function updateMyBadge() {
+    function updateMyBadge() {
   const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
   const allNotifications = JSON.parse(localStorage.getItem('cache_notifications') || '[]');
   
@@ -1711,6 +1698,21 @@ function updateMyBadge() {
     badge.style.display = 'none';
   }
 }
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function showInstallGuideScreen() {
+  // 스플래시 즉시 제거
+  var splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.style.display = 'none';  // 추가!
+    splash.remove();
+  }
+
   // 바디 전체를 설치 안내로 교체
   document.body.style.margin = '0';
   document.body.style.padding = '0';
