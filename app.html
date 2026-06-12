@@ -1203,7 +1203,7 @@ function previewFile(index) {
     }
 
     // ========== MY 페이지 ==========
-   async function showMyPage() {
+ async function showMyPage(pushPage = 1) {
   document.getElementById('mainContent').innerHTML = `
     <div class="card">
       <h3>👤 내 정보</h3>
@@ -1222,14 +1222,12 @@ function previewFile(index) {
       <button class="btn btn-outline" onclick="logout()" style="margin-bottom: 20px;">로그아웃</button>
     </div>
 
-    <!-- ✅ 알림함 -->
     <div class="card">
       <h3>🔔 알림함</h3>
       <div id="notificationList"><div class="loading">로딩중...</div></div>
     </div>
   `;
 
-  // 알림 목록 로드
   const result = await callAPI('getPushHistory', {
     studentId: currentUser.studentId
   });
@@ -1242,38 +1240,63 @@ function previewFile(index) {
   }
 
   const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+  const allData = result.data;
+
+  // 페이지네이션 계산
+  const pageSize = 10;
+  const totalPages = Math.ceil(allData.length / pageSize);
+  const startIndex = (pushPage - 1) * pageSize;
+  const pageData = allData.slice(startIndex, startIndex + pageSize);
 
   let html = '';
-  result.data.forEach(push => {
-    const isRead = readList.includes(String(push['번호']));
 
+  // 알림 목록
+  pageData.forEach(push => {
+    const isRead = readList.includes(String(push['번호']));
     html += `
       <div class="list-item"
            onclick="markNotificationRead('${push['번호']}')"
            style="background: ${isRead ? 'white' : '#f0f7ff'};">
         <div style="display: flex; align-items: center; gap: 8px;">
           ${!isRead ? 
-            '<span style="width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>' : 
-            '<span style="width: 8px; height: 8px; display: inline-block; flex-shrink: 0;"></span>'
+            '<span style="width:8px; height:8px; background:#e74c3c; border-radius:50%; display:inline-block; flex-shrink:0;"></span>' : 
+            '<span style="width:8px; height:8px; display:inline-block; flex-shrink:0;"></span>'
           }
           <div style="flex: 1;">
-            <div class="item-title" style="margin-bottom: 4px;">
-              ${push['제목']}
-            </div>
-            <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 4px;">
-              ${push['내용']}
-            </div>
+            <div class="item-title" style="margin-bottom: 4px;">${push['제목']}</div>
+            <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 4px;">${push['내용']}</div>
             <div style="font-size: 12px; color: #95a5a6;">
               ${formatDate(push['발송일시'])}
               ${push['대상'] === '그룹' ? 
-                '<span class="badge-category" style="margin-left: 6px;">' + push['대상그룹'] + '</span>' : 
-                ''}
+                '<span class="badge-category" style="margin-left:6px;">' + push['대상그룹'] + '</span>' : ''}
             </div>
           </div>
         </div>
       </div>
     `;
   });
+
+  // 페이지네이션 버튼
+  if (totalPages > 1) {
+    html += `
+      <div style="display: flex; justify-content: center; align-items: center; 
+                  gap: 8px; padding: 15px 0;">
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+      html += `
+        <button onclick="showMyPage(${i})"
+                style="width: 36px; height: 36px; border-radius: 50%; border: none;
+                       background: ${i === pushPage ? '#3498db' : '#ecf0f1'};
+                       color: ${i === pushPage ? 'white' : '#2c3e50'};
+                       font-weight: 600; cursor: pointer; font-size: 14px;">
+          ${i}
+        </button>
+      `;
+    }
+
+    html += `</div>`;
+  }
 
   target.innerHTML = html;
 }
