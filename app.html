@@ -735,7 +735,6 @@ window.onload = function() {
 
   const isTest = new URLSearchParams(window.location.search).get('test');
 
-  // 스플래시 즉시 제거
   var splash = document.getElementById('splash-screen');
   if (splash) {
     splash.style.display = 'none';
@@ -746,18 +745,12 @@ window.onload = function() {
     showInstallGuideScreen();
     return;
   }
-
-  // 앱 실행시 배지 업데이트
-  if (savedUser) {
-  currentUser = JSON.parse(savedUser);
-  updateMyBadge(); // ✅ 추가
-  switchTab(null, 'home');
-}
   
   const savedUser = localStorage.getItem('user');
   if (savedUser) {
     try {
       currentUser = JSON.parse(savedUser);
+      updateMyBadge(); // ✅ 순서 맞게 수정
       switchTab(null, 'home');
     } catch(e) {
       localStorage.removeItem('user');
