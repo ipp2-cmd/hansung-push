@@ -747,18 +747,24 @@ window.onload = function() {
   }
   
   const savedUser = localStorage.getItem('user');
-  if (savedUser) {
-    try {
-      currentUser = JSON.parse(savedUser);
-      updateMyBadge(); // ✅ 순서 맞게 수정
-      switchTab(null, 'home');
-    } catch(e) {
-      localStorage.removeItem('user');
-      showLoginModal();
-    }
-  } else {
+if (savedUser) {
+  try {
+    currentUser = JSON.parse(savedUser);
+    // ✅ 앱 실행시 최신 알림 수 서버에서 받아오기
+    callAPI('getPushHistory', { studentId: currentUser.studentId })
+      .then(result => {
+        if (result.success) {
+          localStorage.setItem('cache_notifications', JSON.stringify(result.data));
+          updateMyBadge();
+        }
+      }).catch(e => console.log('알림 업데이트 실패:', e));
+    
+    switchTab(null, 'home');
+  } catch(e) {
+    localStorage.removeItem('user');
     showLoginModal();
   }
+}
 };
     // ========== API 호출 ==========
     async function callAPI(action, data = {}) {
