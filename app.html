@@ -828,28 +828,28 @@ window.onload = function() {
       }
     }
 
-    async function doStudentLogin() {
-      const studentId = document.getElementById('login_studentId').value.trim();
-      const password = document.getElementById('login_password').value;
-      
-      if (!studentId || !password) {
-        alert('학번과 비밀번호를 입력해주세요');
-        return;
-      }
+async function doStudentLogin() {
+  const studentId = document.getElementById('login_studentId').value.trim();
+  const password = document.getElementById('login_password').value;
+  
+  if (!studentId || !password) {
+    alert('학번과 비밀번호를 입력해주세요');
+    return;
+  }
 
-      const result = await callAPI('login', { studentId, password });
-      
-      if (result.success) {
-        currentUser = result.data;
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        closeModal('loginModal');
-         initPushNotification();
-        switchTab(null, 'home');  // ← 수정: showTab 대신 switchTab 호출
-      } 
-        else {
-        alert(result.message);
-      }
-    }
+  const result = await callAPI('login', { studentId, password });
+  
+  if (result.success) {
+    currentUser = result.data;
+    localStorage.setItem('user', JSON.stringify(currentUser));
+    closeModal('loginModal');
+    initPushNotification();
+    updateMyBadge(); // ✅ 추가
+    switchTab(null, 'home');
+  } else {
+    alert(result.message);
+  }
+}
 
 function logout() {
   if (confirm('로그아웃 하시겠습니까?')) {
