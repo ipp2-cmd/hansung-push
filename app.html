@@ -1203,27 +1203,89 @@ function previewFile(index) {
     }
 
     // ========== MY 페이지 ==========
-    function showMyPage() {
-      document.getElementById('mainContent').innerHTML = `
-        <div class="card">
-          <h3>👤 내 정보</h3>
-          <div style="background: #ecf0f1; padding: 20px; border-radius: 12px; margin: 15px 0;">
-            <div style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">${currentUser.name}</div>
-            <div style="font-size: 14px; color: #2c3e50; line-height: 1.8;">
-              <div>🎓 학번: ${currentUser.studentId}</div>
-              <div>📚 학부: ${currentUser.department}</div>
-              <div>📧 이메일: ${currentUser.email}</div>
-              <div>📱 연락처: ${currentUser.phone}</div>
+   async function showMyPage() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <h3>👤 내 정보</h3>
+      <div style="background: #ecf0f1; padding: 20px; border-radius: 12px; margin: 15px 0;">
+        <div style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">${currentUser.name}</div>
+        <div style="font-size: 14px; color: #2c3e50; line-height: 1.8;">
+          <div>🎓 학번: ${currentUser.studentId}</div>
+          <div>📚 학부: ${currentUser.department}</div>
+          <div>📧 이메일: ${currentUser.email}</div>
+          <div>📱 연락처: ${currentUser.phone}</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="showChangePasswordModal()" style="margin-bottom: 10px;">
+        🔐 비밀번호 변경
+      </button>
+      <button class="btn btn-outline" onclick="logout()" style="margin-bottom: 20px;">로그아웃</button>
+    </div>
+
+    <!-- ✅ 알림함 -->
+    <div class="card">
+      <h3>🔔 알림함</h3>
+      <div id="notificationList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  // 알림 목록 로드
+  const result = await callAPI('getPushHistory', {
+    studentId: currentUser.studentId
+  });
+
+  const target = document.getElementById('notificationList');
+
+  if (!result.success || result.data.length === 0) {
+    target.innerHTML = '<div class="empty">알림이 없습니다</div>';
+    return;
+  }
+
+  const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+
+  let html = '';
+  result.data.forEach(push => {
+    const isRead = readList.includes(String(push['번호']));
+
+    html += `
+      <div class="list-item"
+           onclick="markNotificationRead('${push['번호']}')"
+           style="background: ${isRead ? 'white' : '#f0f7ff'};">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${!isRead ? 
+            '<span style="width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>' : 
+            '<span style="width: 8px; height: 8px; display: inline-block; flex-shrink: 0;"></span>'
+          }
+          <div style="flex: 1;">
+            <div class="item-title" style="margin-bottom: 4px;">
+              ${push['제목']}
+            </div>
+            <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 4px;">
+              ${push['내용']}
+            </div>
+            <div style="font-size: 12px; color: #95a5a6;">
+              ${formatDate(push['발송일시'])}
+              ${push['대상'] === '그룹' ? 
+                '<span class="badge-category" style="margin-left: 6px;">' + push['대상그룹'] + '</span>' : 
+                ''}
             </div>
           </div>
-          <button class="btn btn-primary" onclick="showChangePasswordModal()" style="margin-bottom: 10px;">
-            🔐 비밀번호 변경
-          </button>
-          <button class="btn btn-outline" onclick="logout()">로그아웃</button>
         </div>
-      `;
-    }
+      </div>
+    `;
+  });
 
+  target.innerHTML = html;
+}
+
+function markNotificationRead(id) {
+  const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+  if (!readList.includes(String(id))) {
+    readList.push(String(id));
+    localStorage.setItem('read_notifications', JSON.stringify(readList));
+  }
+  showMyPage();
+}
     // ========== 비밀번호 찾기/변경 ==========
     async function submitResetPassword() {
       const studentId = document.getElementById('reset_studentId').value.trim();
