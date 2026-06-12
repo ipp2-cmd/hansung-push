@@ -1523,9 +1523,10 @@ async function checkPushStatus() {
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       const permission = OneSignal.Notifications.permission;
-      const isSubscribed = OneSignal.User.PushSubscription.optedIn;
       
-      if (permission && isSubscribed) {
+      console.log('알림 권한:', permission);
+      
+      if (permission) {
         // 알림 허용됨 - 카드 숨김
         target.innerHTML = '';
       } else {
