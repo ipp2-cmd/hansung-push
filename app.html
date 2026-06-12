@@ -1535,6 +1535,10 @@ function toggleFAQ(id) {
     return;
   }
 
+   // ✅ 알림 캐시 저장 및 배지 업데이트
+localStorage.setItem('cache_notifications', JSON.stringify(result.data));
+updateMyBadge();
+   
   const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
   const allData = result.data;
 
