@@ -998,30 +998,6 @@ callAPI('getActiveSurvey').then(surveyResult => {
       document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
     }
   }
-
-  // ✅ 자료실 캐시 처리
-  const cachedFiles = localStorage.getItem('cache_files');
-  const cachedFilesTime = localStorage.getItem('cache_files_time');
-  const filesExpired = !cachedFilesTime || (Date.now() - parseInt(cachedFilesTime)) > CACHE_TTL;
-
-  if (cachedFiles && !filesExpired) {
-    // 캐시 즉시 표시
-    displayFileList(JSON.parse(cachedFiles).slice(0, 3), 'recentFiles');
-  } else {
-    // 새로 받아오기
-    try {
-      const filesResult = await callAPI('getFiles');
-      if (filesResult.success) {
-        localStorage.setItem('cache_files', JSON.stringify(filesResult.data));
-        localStorage.setItem('cache_files_time', Date.now().toString());
-        displayFileList(filesResult.data.slice(0, 3), 'recentFiles');
-      } else {
-        document.getElementById('recentFiles').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
-      }
-    } catch(e) {
-      document.getElementById('recentFiles').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
-    }
-  }
 }
     // ========== 공지사항 ==========
 async function showNotices() {
