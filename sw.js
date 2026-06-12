@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hansung-app-v12';
+const CACHE_NAME = 'hansung-app-v13';
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
