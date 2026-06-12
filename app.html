@@ -919,6 +919,34 @@ async function showHome() {
 
   const CACHE_TTL = 5 * 60 * 1000; // 5분
 
+    // ✅ 만족도조사 확인
+  try {
+    const surveyResult = await callAPI('getActiveSurvey');
+    if (surveyResult.success) {
+      document.getElementById('surveyBanner').innerHTML = `
+        <div class="card" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+                                  color: white; cursor: pointer;"
+             onclick="window.open('${surveyResult.data['구글폼URL']}', '_blank')">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 36px;">📋</div>
+            <div style="flex: 1;">
+              <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">
+                ${surveyResult.data['제목']}
+              </div>
+              <div style="font-size: 13px; opacity: 0.9;">
+                참여 기간: ${formatDate(surveyResult.data['시작일'])} ~ ${formatDate(surveyResult.data['종료일'])}
+              </div>
+            </div>
+            <div style="font-size: 24px;">›</div>
+          </div>
+        </div>
+      `;
+    }
+  } catch(e) {
+    console.log('만족도조사 조회 실패:', e);
+  }
+
+  
   // ✅ 공지사항 캐시 처리
   const cachedNotices = localStorage.getItem('cache_notices');
   const cachedNoticesTime = localStorage.getItem('cache_notices_time');
