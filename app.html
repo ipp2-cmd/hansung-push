@@ -1518,6 +1518,25 @@ function markAnswerRead(consultId) {
       }
     }
 
+async function cancelConsulting(consultId) {
+  if (!confirm('상담을 취소하시겠습니까?')) return;
+  
+  const result = await callAPI('cancelConsulting', {
+    id: consultId,
+    studentId: currentUser.studentId
+  });
+  
+  if (result.success) {
+    alert(result.message);
+    // ✅ 캐시 삭제 후 새로고침
+    localStorage.removeItem('cache_consulting_' + currentUser.studentId);
+    localStorage.removeItem('cache_consulting_time_' + currentUser.studentId);
+    showConsultingList();
+  } else {
+    alert(result.message);
+  }
+}
+    
     // 푸시알람 확인 
     
 async function checkPushStatus() {
