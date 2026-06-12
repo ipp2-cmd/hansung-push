@@ -1192,7 +1192,86 @@ async function showConsultingList() {
     document.getElementById('consultingList').innerHTML = '<div class="empty">상담 내역이 없습니다</div>';
   }
 }
+async function showFAQ() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <button onclick="showConsultingList()" 
+                style="background: none; border: none; font-size: 20px; cursor: pointer;">
+          ←
+        </button>
+        <h3 style="margin: 0;">❓ 자주 묻는 질문</h3>
+      </div>
+      <div id="faqList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
 
+  const result = await callAPI('getFAQ');
+  const target = document.getElementById('faqList');
+
+  if (!result.success || result.data.length === 0) {
+    target.innerHTML = '<div class="empty">등록된 FAQ가 없습니다</div>';
+    return;
+  }
+
+  // 카테고리별 그룹화
+  const categories = {};
+  result.data.forEach(faq => {
+    const cat = faq['카테고리'];
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(faq);
+  });
+
+  let html = '';
+  Object.keys(categories).forEach(cat => {
+    html += `
+      <div style="margin-bottom: 20px;">
+        <div style="font-weight: bold; font-size: 15px; color: #3498db; 
+                    margin-bottom: 10px; padding-bottom: 5px; 
+                    border-bottom: 2px solid #3498db;">
+          ${cat}
+        </div>
+    `;
+    
+    categories[cat].forEach((faq, index) => {
+      const faqId = `faq_${cat}_${index}`;
+      html += `
+        <div style="border: 1px solid #ecf0f1; border-radius: 8px; margin-bottom: 8px; overflow: hidden;">
+          <div onclick="toggleFAQ('${faqId}')"
+               style="padding: 14px 16px; cursor: pointer; display: flex; 
+                      justify-content: space-between; align-items: center;
+                      background: #f8f9fa;">
+            <div style="font-weight: 600; font-size: 14px; color: #2c3e50;">
+              Q. ${faq['질문']}
+            </div>
+            <div id="${faqId}_icon" style="font-size: 18px; color: #95a5a6;">▼</div>
+          </div>
+          <div id="${faqId}" style="display: none; padding: 14px 16px; 
+                                     font-size: 14px; color: #2c3e50; 
+                                     background: white; line-height: 1.6;">
+            A. ${faq['답변']}
+          </div>
+        </div>
+      `;
+    });
+    
+    html += `</div>`;
+  });
+
+  target.innerHTML = html;
+}
+
+function toggleFAQ(id) {
+  const content = document.getElementById(id);
+  const icon = document.getElementById(id + '_icon');
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    icon.textContent = '▲';
+  } else {
+    content.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
     function displayConsultingList(consultings) {
       const target = document.getElementById('consultingList');
       if (!target) return;
