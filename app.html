@@ -924,8 +924,8 @@ async function showHome() {
   const CACHE_TTL = 5 * 60 * 1000; // 5분
 
 // ✅ 만족도조사 확인
-try {
-  const surveyResult = await callAPI('getActiveSurvey');
+// ✅ 만족도조사 - 백그라운드로 처리
+callAPI('getActiveSurvey').then(surveyResult => {
   if (surveyResult.success) {
     let surveyHtml = '';
     surveyResult.data.forEach(survey => {
@@ -950,9 +950,7 @@ try {
     });
     document.getElementById('surveyBanner').innerHTML = surveyHtml;
   }
-} catch(e) {
-  console.log('만족도조사 조회 실패:', e);
-}
+}).catch(e => console.log('만족도조사 조회 실패:', e));
   // ✅ 공지사항 캐시 처리
   const cachedNotices = localStorage.getItem('cache_notices');
   const cachedNoticesTime = localStorage.getItem('cache_notices_time');
