@@ -943,6 +943,9 @@ async function showHome() {
       <h3>📢 최근 공지사항</h3>
       <div id="recentNotices"><div class="loading">로딩중...</div></div>
     </div>
+    
+    <!-- ✅ 알림 설정 섹션 추가 -->
+    <div id="pushStatusCard"></div>
   `;
 
   const CACHE_TTL = 5 * 60 * 1000; // 5분
@@ -997,6 +1000,8 @@ callAPI('getActiveSurvey').then(surveyResult => {
     } catch(e) {
       document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
     }
+     // ✅ 여기에 추가
+  checkPushStatus();
   }
 }
     // ========== 공지사항 ==========
@@ -1508,6 +1513,62 @@ function markAnswerRead(consultId) {
       }
     }
 
+    // 푸시알람 확인 
+    
+async function checkPushStatus() {
+  const target = document.getElementById('pushStatusCard');
+  if (!target) return;
+  
+  try {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      const permission = OneSignal.Notifications.permission;
+      const isSubscribed = OneSignal.User.PushSubscription.optedIn;
+      
+      if (permission && isSubscribed) {
+        // 알림 허용됨 - 카드 숨김
+        target.innerHTML = '';
+      } else {
+        // 알림 미허용 - 카드 표시
+        target.innerHTML = `
+          <div class="card" style="border-left: 4px solid #f39c12;">
+            <h3>🔔 알림 설정</h3>
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">⚠️</span>
+                <div>
+                  <div style="font-weight: 600; color: #856404; font-size: 14px;">알림이 설정되지 않았어요</div>
+                  <div style="font-size: 12px; color: #856404; margin-top: 2px;">
+                    알림을 허용하면 공지사항 및 상담 답변을 받을 수 있어요
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button onclick="requestPushPermission()"
+                    class="btn btn-primary">
+              🔔 알림 받기 시작
+            </button>
+          </div>
+        `;
+      }
+    });
+  } catch(e) {
+    console.log('알림 상태 확인 실패:', e);
+  }
+}
+
+async function requestPushPermission() {
+  try {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.Slidedown.promptPush();
+      setTimeout(() => checkPushStatus(), 2000);
+    });
+  } catch(e) {
+    alert('알림 설정 중 오류가 발생했습니다');
+  }
+}
+    
     // ========== MY 페이지 ==========
  async function showMyPage(pushPage = 1) {
   document.getElementById('mainContent').innerHTML = `
