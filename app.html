@@ -1688,7 +1688,25 @@ function markNotificationRead(id) {
     splash.style.display = 'none';  // 추가!
     splash.remove();
   }
-
+function updateMyBadge() {
+  const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+  const allNotifications = JSON.parse(localStorage.getItem('cache_notifications') || '[]');
+  
+  // 읽지 않은 알림 수 계산
+  const unreadCount = allNotifications.filter(n => 
+    !readList.includes(String(n['번호']))
+  ).length;
+  
+  const badge = document.getElementById('myBadge');
+  if (!badge) return;
+  
+  if (unreadCount > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+  } else {
+    badge.style.display = 'none';
+  }
+}
   // 바디 전체를 설치 안내로 교체
   document.body.style.margin = '0';
   document.body.style.padding = '0';
