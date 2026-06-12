@@ -1523,6 +1523,8 @@ function markAnswerRead(consultId) {
         alert(result.message);
         closeModal('consultingModal');
         document.getElementById('consultingForm').reset();
+        localStorage.removeItem('cache_consulting_' + currentUser.studentId);
+        localStorage.removeItem('cache_consulting_time_' + currentUser.studentId);
         showConsultingList();
       } else {
         alert(result.message);
