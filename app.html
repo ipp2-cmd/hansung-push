@@ -746,6 +746,13 @@ window.onload = function() {
     showInstallGuideScreen();
     return;
   }
+
+  // 앱 실행시 배지 업데이트
+  if (savedUser) {
+  currentUser = JSON.parse(savedUser);
+  updateMyBadge(); // ✅ 추가
+  switchTab(null, 'home');
+}
   
   const savedUser = localStorage.getItem('user');
   if (savedUser) {
