@@ -1519,19 +1519,27 @@ async function checkPushStatus() {
   const target = document.getElementById('pushStatusCard');
   if (!target) return;
   
+  // ✅ 일단 카드 표시 (로딩중)
+  target.innerHTML = `
+    <div class="card" style="border-left: 4px solid #f39c12;">
+      <h3>🔔 알림 설정 확인중...</h3>
+    </div>
+  `;
+  
   try {
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       const permission = OneSignal.Notifications.permission;
-      
       console.log('알림 권한:', permission);
       
+      // ✅ target 다시 가져오기
+      const t = document.getElementById('pushStatusCard');
+      if (!t) return;
+      
       if (permission) {
-        // 알림 허용됨 - 카드 숨김
-        target.innerHTML = '';
+        t.innerHTML = '';
       } else {
-        // 알림 미허용 - 카드 표시
-        target.innerHTML = `
+        t.innerHTML = `
           <div class="card" style="border-left: 4px solid #f39c12;">
             <h3>🔔 알림 설정</h3>
             <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
