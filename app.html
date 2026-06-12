@@ -1003,7 +1003,7 @@ async function showHome() {
             <div class="item-meta">
               <span class="badge-category">${notice['카테고리']}</span>
               <span>${formatDate(notice['작성일'])}</span>
-              <span>👁 ${notice['조회수']}</span>
+              <span>views ${notice['조회수']}</span>
             </div>
           </div>
         `;
@@ -1025,7 +1025,7 @@ async function showHome() {
               <span>📁 ${notice['카테고리']}</span>
               <span>✍️ ${notice['작성자']}</span>
               <span>📅 ${formatDate(notice['작성일'])}</span>
-              <span>👁 ${notice['조회수']}</span>
+              <span>views ${notice['조회수']}</span>
             </div>
           </div>
           <div class="content">${notice['내용']}</div>
