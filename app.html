@@ -875,68 +875,96 @@ window.onload = function() {
 }
 
     // ========== 홈 화면 ==========
-    async function showHome() {
-      const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
-                          window.navigator.standalone === true;
-      // doStudentLogin() {  //홈화면 넘어가는거 안되서 임시삭제(2026-06-09 16:58)
-      const installBanner = !isInstalled ? `
-        <div class="card" style="background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
-                                  color: white; cursor: pointer;" onclick="showInstallGuide()">
-          <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="font-size: 36px;">📱</div>
-            <div style="flex: 1;">
-              <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">앱으로 설치하기</div>
-              <div style="font-size: 13px; opacity: 0.9;">홈 화면에 추가하고 더 빠르게 접속하세요!</div>
-            </div>
-            <div style="font-size: 24px;">›</div>
-          </div>
+async function showHome() {
+  const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone === true;
+
+  const installBanner = !isInstalled ? `
+    <div class="card" style="background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+                              color: white; cursor: pointer;" onclick="showInstallGuide()">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 36px;">📱</div>
+        <div style="flex: 1;">
+          <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">앱으로 설치하기</div>
+          <div style="font-size: 13px; opacity: 0.9;">홈 화면에 추가하고 더 빠르게 접속하세요!</div>
         </div>
-      ` : '';
-      
-      document.getElementById('mainContent').innerHTML = `
-        ${installBanner}
-        <div class="card">
-          <h3>👋 환영합니다</h3>
-          <p style="color: #7f8c8d; margin-bottom: 15px;">
-            ${currentUser ? currentUser.name + '(' + currentUser.studentId + ')님' : '로그인이 필요합니다'}
-          </p>
-          ${currentUser ? `
-            <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; font-size: 14px; color: #2c3e50;">
-              <div style="margin-bottom: 4px;">📚 ${currentUser.department}</div>
-              <div>📧 ${currentUser.email}</div>
-            </div>
-          ` : ''}
+        <div style="font-size: 24px;">›</div>
+      </div>
+    </div>
+  ` : '';
+  
+  document.getElementById('mainContent').innerHTML = `
+    ${installBanner}
+    <div class="card">
+      <h3>👋 환영합니다</h3>
+      <p style="color: #7f8c8d; margin-bottom: 15px;">
+        ${currentUser ? currentUser.name + '(' + currentUser.studentId + ')님' : '로그인이 필요합니다'}
+      </p>
+      ${currentUser ? `
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; font-size: 14px; color: #2c3e50;">
+          <div style="margin-bottom: 4px;">📚 ${currentUser.department}</div>
+          <div>📧 ${currentUser.email}</div>
         </div>
-        <div class="card">
-          <h3>📢 최근 공지사항</h3>
-          <div id="recentNotices"><div class="loading">로딩중...</div></div>
-        </div>
-        <div class="card">
-          <h3>📚 최근 자료</h3>
-          <div id="recentFiles"><div class="loading">로딩중...</div></div>
-        </div>
-      `;
-        // ✅ 오류 처리 추가
-  try {
-    const noticesResult = await callAPI('getNotices');
-    if (noticesResult.success) {
-      displayNoticeList(noticesResult.data.slice(0, 3), 'recentNotices');
-    } else {
+      ` : ''}
+    </div>
+    <div class="card">
+      <h3>📢 최근 공지사항</h3>
+      <div id="recentNotices"><div class="loading">로딩중...</div></div>
+    </div>
+    <div class="card">
+      <h3>📚 최근 자료</h3>
+      <div id="recentFiles"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  const CACHE_TTL = 5 * 60 * 1000; // 5분
+
+  // ✅ 공지사항 캐시 처리
+  const cachedNotices = localStorage.getItem('cache_notices');
+  const cachedNoticesTime = localStorage.getItem('cache_notices_time');
+  const noticesExpired = !cachedNoticesTime || (Date.now() - parseInt(cachedNoticesTime)) > CACHE_TTL;
+
+  if (cachedNotices && !noticesExpired) {
+    // 캐시 즉시 표시
+    displayNoticeList(JSON.parse(cachedNotices).slice(0, 3), 'recentNotices');
+  } else {
+    // 새로 받아오기
+    try {
+      const noticesResult = await callAPI('getNotices');
+      if (noticesResult.success) {
+        localStorage.setItem('cache_notices', JSON.stringify(noticesResult.data));
+        localStorage.setItem('cache_notices_time', Date.now().toString());
+        displayNoticeList(noticesResult.data.slice(0, 3), 'recentNotices');
+      } else {
+        document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
+      }
+    } catch(e) {
       document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
     }
-  } catch(e) {
-    document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
   }
-  
-  try {
-    const filesResult = await callAPI('getFiles');
-    if (filesResult.success) {
-      displayFileList(filesResult.data.slice(0, 3), 'recentFiles');
-    } else {
+
+  // ✅ 자료실 캐시 처리
+  const cachedFiles = localStorage.getItem('cache_files');
+  const cachedFilesTime = localStorage.getItem('cache_files_time');
+  const filesExpired = !cachedFilesTime || (Date.now() - parseInt(cachedFilesTime)) > CACHE_TTL;
+
+  if (cachedFiles && !filesExpired) {
+    // 캐시 즉시 표시
+    displayFileList(JSON.parse(cachedFiles).slice(0, 3), 'recentFiles');
+  } else {
+    // 새로 받아오기
+    try {
+      const filesResult = await callAPI('getFiles');
+      if (filesResult.success) {
+        localStorage.setItem('cache_files', JSON.stringify(filesResult.data));
+        localStorage.setItem('cache_files_time', Date.now().toString());
+        displayFileList(filesResult.data.slice(0, 3), 'recentFiles');
+      } else {
+        document.getElementById('recentFiles').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
+      }
+    } catch(e) {
       document.getElementById('recentFiles').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
     }
-  } catch(e) {
-    document.getElementById('recentFiles').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
   }
 }
     // ========== 공지사항 ==========
