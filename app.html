@@ -354,24 +354,6 @@
         await OneSignal.Slidedown.promptPush();
       }, 3000);
     }
-
-  // ✅ 푸시 알림 클릭 이벤트 처리
-  OneSignal.Notifications.addEventListener('click', function(e) {
-    console.log('푸시 클릭 전체 데이터:', JSON.stringify(e));
-    alert('클릭 데이터: ' + JSON.stringify(e.notification));  // ✅ 추가
-    
-    const url = e.notification.launchURL;
-    console.log('이동할 URL:', url);
-    
-    if (url && url.includes('?tab=')) {
-      const tabParam = new URL(url).searchParams.get('tab');
-      console.log('탭 이동:', tabParam);
-      if (tabParam && currentUser) {
-        switchTab(null, tabParam);
-      }
-    }
-  });
-    
   });
 </script>
 </head>
@@ -1942,6 +1924,12 @@ async function initPushNotification() {
         await OneSignal.login(String(currentUser.studentId));
         console.log('학번 등록 완료');
       }
+      
+      // ✅ 푸시 알림 클릭 이벤트
+      OneSignal.Notifications.addEventListener('click', function(e) {
+        alert('클릭 데이터: ' + JSON.stringify(e.notification));
+      });
+
     });
 
   } catch(e) {
