@@ -1427,45 +1427,70 @@ function toggleFAQ(id) {
     icon.textContent = '▼';
   }
 }
-    function displayConsultingList(consultings) {
-      const target = document.getElementById('consultingList');
-      if (!target) return;
-      
-      if (consultings.length === 0) {
-        target.innerHTML = '<div class="empty">상담 신청 내역이 없습니다</div>';
-        return;
-      }
-      
-      let html = '';
-      consultings.forEach(consult => {
-        const statusClass = 
-          consult['상태'] === '대기중' ? 'status-waiting' :
-          consult['상태'] === '진행중' ? 'status-processing' : 'status-completed';
-        
-        html += `
-          <div class="list-item">
-            <div class="item-title">
-              ${consult['제목']}
-              <span class="status-badge ${statusClass}">${consult['상태']}</span>
-            </div>
-            <div style="font-size: 13px; color: #7f8c8d; margin: 8px 0;">
-              ${consult['내용'].substring(0, 100)}${consult['내용'].length > 100 ? '...' : ''}
-            </div>
-            <div class="item-meta">
-              <span class="badge-category">${consult['상담유형']}</span>
-              <span>${formatDate(consult['신청일시'])}</span>
-            </div>
-            ${consult['답변'] ? `
-              <div style="margin-top: 12px; padding: 12px; background: #ecf0f1; border-radius: 8px;">
-                <div style="font-size: 12px; color: #7f8c8d; margin-bottom: 6px;">💬 담당자 답변</div>
-                <div style="font-size: 14px; color: #2c3e50;">${consult['답변']}</div>
-              </div>
-            ` : ''}
+function displayConsultingList(consultings) {
+  const target = document.getElementById('consultingList');
+  if (!target) return;
+  
+  if (consultings.length === 0) {
+    target.innerHTML = '<div class="empty">상담 신청 내역이 없습니다</div>';
+    return;
+  }
+
+  // 읽은 답변 목록
+  const readAnswers = JSON.parse(localStorage.getItem('read_answers') || '[]');
+  
+  let html = '';
+  consultings.forEach(consult => {
+    const statusClass = 
+      consult['상태'] === '대기중' ? 'status-waiting' :
+      consult['상태'] === '진행중' ? 'status-processing' : 'status-completed';
+    
+    // 답변 있고 안 읽은 경우
+    const hasUnreadAnswer = consult['답변'] && !readAnswers.includes(String(consult['신청번호']));
+    
+    html += `
+      <div class="list-item" 
+           onclick="markAnswerRead('${consult['신청번호']}')"
+           style="background: ${hasUnreadAnswer ? '#f0f7ff' : 'white'};">
+        <div class="item-title">
+          ${consult['제목']}
+          <span class="status-badge ${statusClass}">${consult['상태']}</span>
+          ${hasUnreadAnswer ? '<span style="background:#e74c3c; color:white; padding:2px 6px; border-radius:4px; font-size:11px; font-weight:bold;">NEW</span>' : ''}
+        </div>
+        <div style="font-size: 13px; color: #7f8c8d; margin: 8px 0;">
+          ${consult['내용'].substring(0, 100)}${consult['내용'].length > 100 ? '...' : ''}
+        </div>
+        <div class="item-meta">
+          <span class="badge-category">${consult['상담유형']}</span>
+          <span>${formatDate(consult['신청일시'])}</span>
+        </div>
+        ${consult['답변'] ? `
+          <div style="margin-top: 12px; padding: 12px; 
+                      background: ${hasUnreadAnswer ? '#ddeeff' : '#ecf0f1'}; 
+                      border-radius: 8px;
+                      ${hasUnreadAnswer ? 'border-left: 3px solid #3498db;' : ''}">
+            <div style="font-size: 12px; color: #7f8c8d; margin-bottom: 6px;">💬 담당자 답변</div>
+            <div style="font-size: 14px; color: #2c3e50;">${consult['답변']}</div>
           </div>
-        `;
-      });
-      target.innerHTML = html;
-    }
+        ` : ''}
+      </div>
+    `;
+  });
+  target.innerHTML = html;
+}
+
+function markAnswerRead(consultId) {
+  const readAnswers = JSON.parse(localStorage.getItem('read_answers') || '[]');
+  if (!readAnswers.includes(String(consultId))) {
+    readAnswers.push(String(consultId));
+    localStorage.setItem('read_answers', JSON.stringify(readAnswers));
+  }
+  // 화면 새로고침
+  const cached = localStorage.getItem('cache_consulting_' + currentUser.studentId);
+  if (cached) {
+    displayConsultingList(JSON.parse(cached));
+  }
+}
 
     function openConsultingModal() {
       document.getElementById('consultingModal').classList.add('show');
