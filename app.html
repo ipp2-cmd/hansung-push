@@ -865,6 +865,14 @@ window.onload = function() {
         document.getElementById('mainContent').innerHTML = '';
         showLoginModal();
       }
+      if (result.success) {
+  currentUser = result.data;
+  localStorage.setItem('user', JSON.stringify(currentUser));
+  closeModal('loginModal');
+  initPushNotification();
+  updateMyBadge(); // ✅ 추가
+  switchTab(null, 'home');
+}
     }
 
     // ========== 탭 전환 ==========
