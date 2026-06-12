@@ -355,9 +355,11 @@
       }, 3000);
     }
 
-      // ✅ 푸시 알림 클릭 이벤트 처리
+  // ✅ 푸시 알림 클릭 이벤트 처리
   OneSignal.Notifications.addEventListener('click', function(e) {
-    console.log('푸시 클릭:', e);
+    console.log('푸시 클릭 전체 데이터:', JSON.stringify(e));
+    alert('클릭 데이터: ' + JSON.stringify(e.notification));  // ✅ 추가
+    
     const url = e.notification.launchURL;
     console.log('이동할 URL:', url);
     
