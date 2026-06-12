@@ -1202,6 +1202,16 @@ async function showFAQ() {
         </button>
         <h3 style="margin: 0;">❓ 자주 묻는 질문</h3>
       </div>
+      
+      <!-- ✅ 검색창 추가 -->
+      <div style="margin-bottom: 15px;">
+        <input type="text" id="faqSearch" 
+               placeholder="🔍 질문 검색..." 
+               oninput="filterFAQ()"
+               style="width: 100%; padding: 12px 14px; border: 1px solid #dfe6e9; 
+                      border-radius: 8px; font-size: 15px;">
+      </div>
+      
       <div id="faqList"><div class="loading">로딩중...</div></div>
     </div>
   `;
@@ -1214,9 +1224,24 @@ async function showFAQ() {
     return;
   }
 
+  // ✅ 전역변수에 FAQ 데이터 저장
+  window._faqData = result.data;
+  
+  renderFAQ(result.data);
+}
+
+// ✅ FAQ 렌더링 함수 분리
+function renderFAQ(faqs) {
+  const target = document.getElementById('faqList');
+  
+  if (faqs.length === 0) {
+    target.innerHTML = '<div class="empty">검색 결과가 없습니다</div>';
+    return;
+  }
+
   // 카테고리별 그룹화
   const categories = {};
-  result.data.forEach(faq => {
+  faqs.forEach(faq => {
     const cat = faq['카테고리'];
     if (!categories[cat]) categories[cat] = [];
     categories[cat].push(faq);
@@ -1259,6 +1284,23 @@ async function showFAQ() {
   });
 
   target.innerHTML = html;
+}
+
+// ✅ 검색 필터 함수
+function filterFAQ() {
+  const search = document.getElementById('faqSearch').value.toLowerCase().trim();
+  
+  if (!search) {
+    renderFAQ(window._faqData);
+    return;
+  }
+  
+  const filtered = window._faqData.filter(faq => 
+    faq['질문'].toLowerCase().includes(search) || 
+    faq['답변'].toLowerCase().includes(search)
+  );
+  
+  renderFAQ(filtered);
 }
 
 function toggleFAQ(id) {
