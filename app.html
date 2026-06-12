@@ -1170,25 +1170,28 @@ function previewFile(index) {
   document.getElementById('filePreviewModal').classList.add('show');
 }
     // ========== 상담 ==========
-    async function showConsultingList() {
-      document.getElementById('mainContent').innerHTML = `
-        <div class="card">
-          <h3>💬 1:1 상담</h3>
-          <button class="btn btn-success" onclick="openConsultingModal()" style="margin-bottom: 15px;">
-            상담 신청하기
-          </button>
-          <div id="consultingList"><div class="loading">로딩중...</div></div>
-        </div>
-      `;
-      
-      const result = await callAPI('getMyConsulting', { studentId: currentUser.studentId });
-      
-      if (result.success) {
-        displayConsultingList(result.data);
-      } else {
-        document.getElementById('consultingList').innerHTML = '<div class="empty">상담 내역이 없습니다</div>';
-      }
-    }
+async function showConsultingList() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <h3>💬 1:1 상담</h3>
+      <button class="btn btn-success" onclick="openConsultingModal()" style="margin-bottom: 10px;">
+        상담 신청하기
+      </button>
+      <button class="btn btn-outline" onclick="showFAQ()" style="margin-bottom: 15px;">
+        ❓ 자주 묻는 질문 (FAQ)
+      </button>
+      <div id="consultingList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+  
+  const result = await callAPI('getMyConsulting', { studentId: currentUser.studentId });
+  
+  if (result.success) {
+    displayConsultingList(result.data);
+  } else {
+    document.getElementById('consultingList').innerHTML = '<div class="empty">상담 내역이 없습니다</div>';
+  }
+}
 
     function displayConsultingList(consultings) {
       const target = document.getElementById('consultingList');
