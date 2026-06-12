@@ -759,12 +759,17 @@ if (savedUser) {
         }
       }).catch(e => console.log('알림 업데이트 실패:', e));
     
+    const tabParam = new URLSearchParams(window.location.search).get('tab');
+    const targetTab = tabParam || 'home';
     switchTab(null, 'home');
+  
   } catch(e) {
     localStorage.removeItem('user');
+      showLoginModal();
+    }
+  } else {
     showLoginModal();
   }
-}
 };
     // ========== API 호출 ==========
     async function callAPI(action, data = {}) {
