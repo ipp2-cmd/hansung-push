@@ -403,10 +403,27 @@
       <div class="nav-icon">💬</div>
       <div class="nav-label">상담</div>
     </div>
-    <div class="nav-item" data-tab="my" onclick="switchTab(event, 'my')">
-      <div class="nav-icon">👤</div>
-      <div class="nav-label">MY</div>
-    </div>
+<div class="nav-item" data-tab="my" onclick="switchTab(event, 'my')">
+  <div style="position: relative; display: inline-block;">
+    <div class="nav-icon">👤</div>
+    <span id="myBadge" style="
+      display: none;
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
+    "></span>
+  </div>
+  <div class="nav-label">MY</div>
+</div>
   </div>
 
   <!-- 회원가입 모달 -->
