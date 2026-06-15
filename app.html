@@ -1484,27 +1484,86 @@ async function showConsultingList() {
     </div>
   `;
 
-  const CACHE_TTL = 5 * 60 * 1000; 
-  const cached = localStorage.getItem('cache_consulting_' + currentUser.studentId);
-  const cachedTime = localStorage.getItem('cache_consulting_time_' + currentUser.studentId);
-  const isExpired = !cachedTime || (Date.now() - parseInt(cachedTime)) > CACHE_TTL;
+const CACHE_TTL = 1 * 60 * 1000;
 
-// 캐시 있으면 즉시 표시
-if (cached && !isExpired) { 
-displayConsultingList(JSON.parse(cached)); 
-} else { 
-const result = await callAPI('getMyConsulting', { studentId: 
-currentUser.studentId }); 
-if (result.success) { 
-localStorage.setItem('cache_consulting_' + currentUser.studentId, 
-JSON.stringify(result.data)); 
-localStorage.setItem('cache_consulting_time_' + 
-currentUser.studentId, Date.now().toString()); 
-displayConsultingList(result.data); 
-} else { 
-document.getElementById('consultingList').innerHTML = '<div class="empty">상담 내역이 없습니다</div>'; 
-} 
-} 
+const cached =
+  localStorage.getItem(
+    'cache_consulting_' +
+    currentUser.studentId
+  );
+
+const cachedTime =
+  localStorage.getItem(
+    'cache_consulting_time_' +
+    currentUser.studentId
+  );
+
+const isExpired =
+  !cachedTime ||
+  (
+    Date.now() -
+    parseInt(cachedTime)
+  ) > CACHE_TTL;
+
+
+// 1. 캐시 있으면 먼저 보여줌
+if (cached && !isExpired) {
+
+  displayConsultingList(
+    JSON.parse(cached)
+  );
+}
+
+
+// 2. 최신 데이터 항상 다시 가져오기
+try {
+
+  const result =
+    await callAPI(
+      'getMyConsulting',
+      {
+        studentId:
+          currentUser.studentId
+      }
+    );
+
+  if (result.success) {
+
+    localStorage.setItem(
+      'cache_consulting_' +
+      currentUser.studentId,
+      JSON.stringify(
+        result.data
+      )
+    );
+
+    localStorage.setItem(
+      'cache_consulting_time_' +
+      currentUser.studentId,
+      Date.now().toString()
+    );
+
+    // 최신 데이터 다시 그림
+    displayConsultingList(
+      result.data
+    );
+
+  } else {
+
+    document
+      .getElementById(
+        'consultingList'
+      ).innerHTML =
+      '<div class="empty">상담 내역이 없습니다</div>';
+  }
+
+} catch(e) {
+
+  console.error(
+    '상담 조회 오류',
+    e
+  );
+}
 }
 async function showFAQ() {
   document.getElementById('mainContent').innerHTML = `
