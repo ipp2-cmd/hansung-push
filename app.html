@@ -1183,6 +1183,92 @@ async function showNoticeDetail(id) {
   }
 }
 
+function renderNoticeDetail(
+  notice
+){
+
+  document
+    .getElementById(
+      'noticeDetailContent'
+    ).innerHTML = `
+
+      <div class="meta">
+
+        <div style="
+          font-size:20px;
+          font-weight:bold;
+          color:#2c3e50;
+          margin-bottom:10px;
+        ">
+
+          ${
+            notice['중요공지']
+            ? '<span class="badge-important">중요</span> '
+            : ''
+          }
+
+          ${notice['제목']}
+        </div>
+
+        <div style="
+          display:flex;
+          gap:15px;
+          flex-wrap:wrap;
+        ">
+          <span>
+            📁
+            ${notice['카테고리']}
+          </span>
+
+          <span>
+            ✍️
+            ${notice['작성자']}
+          </span>
+
+          <span>
+            📅
+            ${formatDate(
+              notice['작성일']
+            )}
+          </span>
+
+          <span>
+            views
+            ${notice['조회수']}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="content">
+        ${notice['내용']}
+      </div>
+
+      ${
+        notice['첨부파일URL']
+        ? `
+        <div style="
+          margin-top:20px;
+          padding-top:20px;
+          border-top:
+            1px solid #ecf0f1;
+        ">
+          <a
+            href="${notice['첨부파일URL']}"
+            target="_blank"
+            style="
+              color:#3498db;
+              text-decoration:none;
+            "
+          >
+            📎 첨부파일 보기
+          </a>
+        </div>
+        `
+        : ''
+      }
+    `;
+}
     
 // ========== 캘린더 ==========
 function showCalendar() {
