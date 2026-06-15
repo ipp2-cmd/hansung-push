@@ -1022,6 +1022,9 @@ callAPI('getActiveSurvey').then(surveyResult => {
   checkPushStatus();
   }
 }
+    clearInterval(
+  consultingRefreshTimer
+);
     // ========== 공지사항 ==========
 async function showNotices() {
   document.getElementById('mainContent').innerHTML = `
