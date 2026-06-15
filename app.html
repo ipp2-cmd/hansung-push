@@ -1368,7 +1368,7 @@ function renderFAQ(faqs) {
           <div id="${faqId}" style="display: none; padding: 14px 16px; 
                                      font-size: 14px; color: #2c3e50; 
                                      background: white; line-height: 1.6;">
-            A. ${faq['답변']}
+            A. ${faq['답변'].replace(/\n/g, '<br>')}
           </div>
         </div>
       `;
