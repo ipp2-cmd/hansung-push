@@ -1603,6 +1603,11 @@ async function refreshConsultingSilently() {
 
     if (result.success) {
 
+ console.log(
+    '상담 개수:',
+    result.data.length
+  );
+      
       // 최신 캐시 저장
       localStorage.setItem(
         'cache_consulting_' +
