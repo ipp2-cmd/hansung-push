@@ -664,6 +664,7 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbw_VUdjQbnNZtGTDlEagLHAysfzgIFYBl6vOdoGZQOHV3pULpLe7EGlVwNcDfrQZxDNhA/exec';
     
     let currentUser = null;
+    let consultingRefreshTimer = null;
     let currentTab = 'home';
     let deferredPrompt = null;
     let installBannerShown = false;
@@ -1512,6 +1513,20 @@ if (cached && !isExpired) {
   displayConsultingList(
     JSON.parse(cached)
   );
+
+  // 기존 타이머 제거
+if (consultingRefreshTimer) {
+  clearInterval(
+    consultingRefreshTimer
+  );
+}
+
+// 30초마다 최신 상담 자동 갱신
+consultingRefreshTimer =
+  setInterval(
+    refreshConsultingSilently,
+    30000
+  );
 }
 
 
@@ -1565,6 +1580,69 @@ try {
   );
 }
 }
+
+async function refreshConsultingSilently() {
+
+  try {
+
+    const result =
+      await callAPI(
+        'getMyConsulting',
+        {
+          studentId:
+            currentUser.studentId
+        }
+      );
+
+    if (result.success) {
+
+      const oldData =
+        JSON.stringify(
+          JSON.parse(
+            localStorage.getItem(
+              'cache_consulting_' +
+              currentUser.studentId
+            ) || '[]'
+          )
+        );
+
+      const newData =
+        JSON.stringify(
+          result.data
+        );
+
+      // 변경 있을 때만 다시 렌더링
+      if (
+        oldData !==
+        newData
+      ) {
+
+        localStorage.setItem(
+          'cache_consulting_' +
+          currentUser.studentId,
+          newData
+        );
+
+        localStorage.setItem(
+          'cache_consulting_time_' +
+          currentUser.studentId,
+          Date.now().toString()
+        );
+
+        displayConsultingList(
+          result.data
+        );
+      }
+    }
+
+  } catch(e) {
+
+    console.log(
+      '상담 자동갱신 실패'
+    );
+  }
+}
+    
 async function showFAQ() {
   document.getElementById('mainContent').innerHTML = `
     <div class="card">
