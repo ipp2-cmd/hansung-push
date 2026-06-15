@@ -1435,11 +1435,38 @@ async function showConsultingList() {
       <button class="btn btn-outline" onclick="showFAQ()" style="margin-bottom: 15px;">
         ❓ 자주 묻는 질문 (FAQ)
       </button>
-      <div id="consultingList"><div class="loading">로딩중...</div></div>
+<div id="consultingList">
+  <div style="padding:10px 0;">
+    
+    <div style="
+      background:#f4f6f8;
+      height:70px;
+      border-radius:10px;
+      margin-bottom:12px;
+      animation:pulse 1.2s infinite;
+    "></div>
+
+    <div style="
+      background:#f4f6f8;
+      height:70px;
+      border-radius:10px;
+      margin-bottom:12px;
+      animation:pulse 1.2s infinite;
+    "></div>
+
+    <div style="
+      background:#f4f6f8;
+      height:70px;
+      border-radius:10px;
+      animation:pulse 1.2s infinite;
+    "></div>
+
+  </div>
+</div>
     </div>
   `;
 
-  const CACHE_TTL = 1 * 60 * 1000; // 1분
+  const CACHE_TTL = 5 * 60 * 1000; 
   const cached = localStorage.getItem('cache_consulting_' + currentUser.studentId);
   const cachedTime = localStorage.getItem('cache_consulting_time_' + currentUser.studentId);
   const isExpired = !cachedTime || (Date.now() - parseInt(cachedTime)) > CACHE_TTL;
