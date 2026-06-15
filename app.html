@@ -1060,169 +1060,130 @@ async function showNotices() {
       target.innerHTML = html;
     }
 
- async function showNoticeDetail(id) {
+async function showNoticeDetail(id) {
 
-  // 1. 팝업 먼저 즉시 열기
+  const CACHE_TTL =
+    5 * 60 * 1000; // 5분
+
+  const cacheKey =
+    `notice_detail_${id}`;
+
+  const cacheTimeKey =
+    `notice_detail_time_${id}`;
+
+  const cached =
+    localStorage.getItem(
+      cacheKey
+    );
+
+  const cachedTime =
+    localStorage.getItem(
+      cacheTimeKey
+    );
+
+  const isExpired =
+    !cachedTime ||
+    (
+      Date.now()
+      - parseInt(cachedTime)
+    ) > CACHE_TTL;
+
+  // 1. 팝업 즉시 열기
   document
-    .getElementById('noticeDetailModal')
+    .getElementById(
+      'noticeDetailModal'
+    )
     .classList.add('show');
 
-  // 2. 로딩 메시지 먼저 표시
-  document
-    .getElementById('noticeDetailContent')
-    .innerHTML = `
-      <div style="
-        padding: 40px;
-        text-align: center;
-        color: #7f8c8d;
-      ">
-        <div style="
-          font-size: 18px;
-          margin-bottom: 10px;
-        ">
-          📄 공지사항 불러오는 중...
-        </div>
+  // 2. 캐시 있으면 즉시 표시
+  if (cached && !isExpired) {
 
+    renderNoticeDetail(
+      JSON.parse(cached)
+    );
+
+  } else {
+
+    // 캐시 없을 때 로딩 표시
+    document
+      .getElementById(
+        'noticeDetailContent'
+      )
+      .innerHTML = `
         <div style="
-          font-size: 14px;
+          padding:40px;
+          text-align:center;
+          color:#7f8c8d;
         ">
-          잠시만 기다려주세요
+          <div style="
+            font-size:18px;
+            margin-bottom:10px;
+          ">
+            📄 공지사항 불러오는 중...
+          </div>
+
+          <div>
+            잠시만 기다려주세요
+          </div>
         </div>
-      </div>
-    `;
+      `;
+  }
 
   try {
 
-    // 3. API 호출
+    // 3. 서버에서 최신 데이터
     const result =
       await callAPI(
         'getNoticeDetail',
         { id }
       );
 
-    // 4. 성공 시 내용 표시
-    if (result.success) {
+    if(result.success){
 
       const notice =
         result.data;
 
-      document
-        .getElementById(
-          'noticeDetailContent'
-        ).innerHTML = `
+      // 캐시 저장
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify(notice)
+      );
 
-          <div class="meta">
+      localStorage.setItem(
+        cacheTimeKey,
+        Date.now().toString()
+      );
 
-            <div style="
-              font-size:20px;
-              font-weight:bold;
-              color:#2c3e50;
-              margin-bottom:10px;
-            ">
-
-              ${
-                notice['중요공지']
-                  ? '<span class="badge-important">중요</span> '
-                  : ''
-              }
-
-              ${notice['제목']}
-            </div>
-
-            <div style="
-              display:flex;
-              gap:15px;
-              flex-wrap:wrap;
-            ">
-              <span>
-                📁 ${notice['카테고리']}
-              </span>
-
-              <span>
-                ✍️ ${notice['작성자']}
-              </span>
-
-              <span>
-                📅 ${formatDate(
-                  notice['작성일']
-                )}
-              </span>
-
-              <span>
-                views ${notice['조회수']}
-              </span>
-            </div>
-
-          </div>
-
-          <div class="content">
-            ${notice['내용']}
-          </div>
-
-          ${
-            notice['첨부파일URL']
-            ? `
-            <div style="
-              margin-top:20px;
-              padding-top:20px;
-              border-top:
-                1px solid #ecf0f1;
-            ">
-
-              <a
-                href="${notice['첨부파일URL']}"
-                target="_blank"
-                style="
-                  color:#3498db;
-                  text-decoration:none;
-                "
-              >
-                📎 첨부파일 보기
-              </a>
-
-            </div>
-            `
-            : ''
-          }
-        `;
-    }
-
-    // 실패 시
-    else {
-
-      document
-        .getElementById(
-          'noticeDetailContent'
-        ).innerHTML = `
-          <div style="
-            padding:40px;
-            text-align:center;
-            color:#e74c3c;
-          ">
-            공지사항을
-            불러올 수 없습니다.
-          </div>
-        `;
+      // 최신 데이터 렌더링
+      renderNoticeDetail(
+        notice
+      );
     }
 
   }
 
   catch(error){
 
-    document
-      .getElementById(
-        'noticeDetailContent'
-      ).innerHTML = `
-        <div style="
-          padding:40px;
-          text-align:center;
-          color:#e74c3c;
-        ">
-          오류가 발생했습니다.
-        </div>
-      `;
+    if(!cached){
+
+      document
+        .getElementById(
+          'noticeDetailContent'
+        )
+        .innerHTML = `
+          <div style="
+            padding:40px;
+            text-align:center;
+            color:#e74c3c;
+          ">
+            오류가 발생했습니다.
+          </div>
+        `;
+    }
   }
 }
+
+    
 // ========== 캘린더 ==========
 function showCalendar() {
   document.getElementById('mainContent').innerHTML = `
