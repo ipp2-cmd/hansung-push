@@ -648,7 +648,13 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="submitConsulting()">신청하기</button>
+        <button
+  id="submitConsultBtn"
+  class="btn btn-success"
+  onclick="submitConsulting()"
+>
+  상담 신청하기
+</button>
       </div>
     </div>
   </div>
@@ -1732,40 +1738,133 @@ function toggleConsult(consultId, answerId) {
       document.getElementById('consultingModal').classList.add('show');
     }
 
-    async function submitConsulting() {
-      const type = document.getElementById('consult_type').value;
-      const title = document.getElementById('consult_title').value.trim();
-      const content = document.getElementById('consult_content').value.trim();
-      const hopeDate = document.getElementById('consult_hopeDate').value;
-      const anonymous = document.getElementById('consult_anonymous').checked; // ✅ 추가
+async function submitConsulting() {
 
-      
-      if (!type || !title || !content) {
-        alert('필수 항목을 모두 입력해주세요');
-        return;
-      }
-      
-      const result = await callAPI('submitConsulting', {
-        studentId: currentUser.studentId,
-        name: currentUser.name,
-        phone: currentUser.phone,
-        email: currentUser.email,
-        type, title, content, hopeDate,
-        anonymous  // ✅ 추가
+  const btn =
+    document.getElementById(
+      'submitConsultBtn'
+    );
 
-      });
-      
-      if (result.success) {
-        alert(result.message);
-        closeModal('consultingModal');
-        document.getElementById('consultingForm').reset();
-        localStorage.removeItem('cache_consulting_' + currentUser.studentId);
-        localStorage.removeItem('cache_consulting_time_' + currentUser.studentId);
-        showConsultingList();
-      } else {
-        alert(result.message);
-      }
+  // 중복 클릭 방지
+  if (btn.disabled)
+    return;
+
+  // 버튼 잠금
+  btn.disabled = true;
+  btn.innerHTML =
+    '⏳ 신청 중...';
+
+  try {
+
+    const type =
+      document.getElementById(
+        'consult_type'
+      ).value;
+
+    const title =
+      document.getElementById(
+        'consult_title'
+      ).value.trim();
+
+    const content =
+      document.getElementById(
+        'consult_content'
+      ).value.trim();
+
+    const hopeDate =
+      document.getElementById(
+        'consult_hopeDate'
+      ).value;
+
+    const anonymous =
+      document.getElementById(
+        'consult_anonymous'
+      ).checked;
+
+    if (
+      !type ||
+      !title ||
+      !content
+    ) {
+
+      alert(
+        '필수 항목을 모두 입력해주세요'
+      );
+
+      return;
     }
+
+    const result =
+      await callAPI(
+        'submitConsulting',
+        {
+          studentId:
+            currentUser.studentId,
+          name:
+            currentUser.name,
+          phone:
+            currentUser.phone,
+          email:
+            currentUser.email,
+          type,
+          title,
+          content,
+          hopeDate,
+          anonymous
+        }
+      );
+
+    if (
+      result.success
+    ) {
+
+      alert(
+        result.message
+      );
+
+      closeModal(
+        'consultingModal'
+      );
+
+      document.getElementById(
+        'consultingForm'
+      ).reset();
+
+      localStorage.removeItem(
+        'cache_consulting_' +
+        currentUser.studentId
+      );
+
+      localStorage.removeItem(
+        'cache_consulting_time_' +
+        currentUser.studentId
+      );
+
+      showConsultingList();
+
+    } else {
+
+      alert(
+        result.message
+      );
+    }
+
+  } catch(e){
+
+    alert(
+      '일시적인 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.'
+    );
+
+  } finally {
+
+    // 버튼 복구
+    btn.disabled =
+      false;
+
+    btn.innerHTML =
+      '상담 신청하기';
+  }
+}
 
 async function cancelConsulting(consultId) {
   if (!confirm('상담을 취소하시겠습니까?')) return;
