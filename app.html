@@ -1586,6 +1586,10 @@ try {
 
 async function refreshConsultingSilently() {
 
+  console.log(
+  '상담 자동갱신 실행'
+);
+
   try {
 
     const result =
@@ -1599,49 +1603,32 @@ async function refreshConsultingSilently() {
 
     if (result.success) {
 
-      const oldData =
-        JSON.stringify(
-          JSON.parse(
-            localStorage.getItem(
-              'cache_consulting_' +
-              currentUser.studentId
-            ) || '[]'
-          )
-        );
-
-      const newData =
+      // 최신 캐시 저장
+      localStorage.setItem(
+        'cache_consulting_' +
+        currentUser.studentId,
         JSON.stringify(
           result.data
-        );
+        )
+      );
 
-      // 변경 있을 때만 다시 렌더링
-      if (
-        oldData !==
-        newData
-      ) {
+      localStorage.setItem(
+        'cache_consulting_time_' +
+        currentUser.studentId,
+        Date.now().toString()
+      );
 
-        localStorage.setItem(
-          'cache_consulting_' +
-          currentUser.studentId,
-          newData
-        );
-
-        localStorage.setItem(
-          'cache_consulting_time_' +
-          currentUser.studentId,
-          Date.now().toString()
-        );
-
-        displayConsultingList(
-          result.data
-        );
-      }
+      // 무조건 다시 렌더링
+      displayConsultingList(
+        result.data
+      );
     }
 
-  } catch(e) {
+  } catch (e) {
 
     console.log(
-      '상담 자동갱신 실패'
+      '상담 자동갱신 실패',
+      e
     );
   }
 }
