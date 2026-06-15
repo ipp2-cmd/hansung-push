@@ -1490,47 +1490,21 @@ async function showConsultingList() {
   const isExpired = !cachedTime || (Date.now() - parseInt(cachedTime)) > CACHE_TTL;
 
 // 캐시 있으면 즉시 표시
-if (cached && !isExpired) {
-  displayConsultingList(JSON.parse(cached));
-}
-
-// ✅ 항상 최신 데이터 다시 조회
-const result = await callAPI(
-  'getMyConsulting',
-  {
-    studentId:
-      currentUser.studentId
-  }
-);
-
-if (result.success) {
-
-  localStorage.setItem(
-    'cache_consulting_' +
-    currentUser.studentId,
-    JSON.stringify(
-      result.data
-    )
-  );
-
-  localStorage.setItem(
-    'cache_consulting_time_' +
-    currentUser.studentId,
-    Date.now().toString()
-  );
-
-  // 최신 데이터로 덮어쓰기
-  displayConsultingList(
-    result.data
-  );
-
-} else {
-
-  document
-    .getElementById(
-      'consultingList'
-    ).innerHTML =
-    '<div class="empty">상담 내역이 없습니다</div>';
+if (cached && !isExpired) { 
+displayConsultingList(JSON.parse(cached)); 
+} else { 
+const result = await callAPI('getMyConsulting', { studentId: 
+currentUser.studentId }); 
+if (result.success) { 
+localStorage.setItem('cache_consulting_' + currentUser.studentId, 
+JSON.stringify(result.data)); 
+localStorage.setItem('cache_consulting_time_' + 
+currentUser.studentId, Date.now().toString()); 
+displayConsultingList(result.data); 
+} else { 
+document.getElementById('consultingList').innerHTML = '<div class="empty">상담 내역이 없습니다</div>'; 
+} 
+} 
 }
 async function showFAQ() {
   document.getElementById('mainContent').innerHTML = `
