@@ -1789,7 +1789,7 @@ function displayConsultingList(consultings) {
     
     // ✅ 익명 상담 여부 확인 (데이터에 '익명' 필드가 true면 표시)
     // 만약 데이터 필드명이 다르다면 'consult["익명"]' 부분을 해당 필드명으로 수정하세요.
-    const isAnonymous = consult['익명여부'] === true || consult['익명여부'] === 'true';
+    const isAnonymous = consult['익명여부'] === true || consult['익명여부'] === 'Y';
     
     const hasUnreadAnswer = consult['답변'] && !readAnswers.includes(String(consult['신청번호']));
     const consultId = `consult_${consult['신청번호']}`;
