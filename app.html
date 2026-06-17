@@ -1787,17 +1787,21 @@ function displayConsultingList(consultings) {
       consult['상태'] === '진행중' ? 'status-processing' : 
       consult['상태'] === '취소' ? 'status-waiting' : 'status-completed';
     
+    // ✅ 익명 상담 여부 확인 (데이터에 '익명' 필드가 true면 표시)
+    // 만약 데이터 필드명이 다르다면 'consult["익명"]' 부분을 해당 필드명으로 수정하세요.
+    const isAnonymous = consult['익명여부'] === true || consult['익명여부'] === 'true';
+    
     const hasUnreadAnswer = consult['답변'] && !readAnswers.includes(String(consult['신청번호']));
     const consultId = `consult_${consult['신청번호']}`;
     
     html += `
       <div class="list-item" style="cursor: pointer;">
-        <!-- 제목 영역 (항상 표시) -->
         <div onclick="toggleConsult('${consultId}', '${consult['신청번호']}')"
              style="display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <div class="item-title">
               ${consult['제목']}
+              ${isAnonymous ? '<span style="background:#95a5a6; color:white; padding:2px 6px; border-radius:4px; font-size:11px; margin-left:5px;">익명</span>' : ''}
               <span class="status-badge ${statusClass}">${consult['상태']}</span>
               ${hasUnreadAnswer ? '<span style="background:#e74c3c; color:white; padding:2px 6px; border-radius:4px; font-size:11px; font-weight:bold;">NEW</span>' : ''}
             </div>
@@ -1809,7 +1813,6 @@ function displayConsultingList(consultings) {
           <div id="${consultId}_icon" style="font-size: 18px; color: #95a5a6; margin-left: 10px;">▼</div>
         </div>
 
-        <!-- 상세 내용 (접혀있음) -->
         <div id="${consultId}" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #ecf0f1;">
           <div style="font-size: 14px; color: #2c3e50; margin-bottom: 10px; white-space: pre-wrap;">
             ${consult['내용']}
