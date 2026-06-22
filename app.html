@@ -1084,6 +1084,13 @@ async function showNotices() {
 
 async function showNoticeDetail(id) {
 
+  if (typeof callAPI === 'function' && typeof currentUser !== 'undefined') {
+    callAPI('markNoticeRead', {
+      noticeId: id,
+      studentId: currentUser.studentId 
+    });
+  }
+  
   const CACHE_TTL =
     5 * 60 * 1000; // 5분
 
