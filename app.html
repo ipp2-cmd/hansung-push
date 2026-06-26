@@ -1456,6 +1456,16 @@ function previewFile(index) {
     // ========== 상담 ==========
 async function showConsultingList() {
   document.getElementById('mainContent').innerHTML = `
+    // ===== 카카오톡 상담 버튼 추가   
+<div style="margin-top: 20px; margin-bottom: 20px; text-align: center;">
+  <a href="http://pf.kakao.com/_fgkgK/chat" 
+     target="_blank" 
+     style="display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; padding: 14px 20px; background-color: #FEE500; color: #000000; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <span style="margin-right: 8px; font-size: 20px;">💬</span> 
+    카카오톡으로 빠른 상담하기
+  </a>
+</div>
+    
     <div class="card">
       <h3>💬 1:1 상담</h3>
       <button class="btn btn-success" onclick="openConsultingModal()" style="margin-bottom: 10px;">
