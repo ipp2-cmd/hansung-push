@@ -668,11 +668,7 @@
     let currentTab = 'home';
     let deferredPrompt = null;
     let installBannerShown = false;
-    let appData = {
-      notices: [],
-      archives: [],
-      isLoaded: false 
-    };
+
     // ========== PWA 설치 처리 ==========
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
