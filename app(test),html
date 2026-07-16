@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="ko" style="background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);">
+<head>
+
+  <!-- OneSignal SDK -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.3s;
+    }
+    
+    #splash-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .splash-icon {
+      width: 100px; height: 100px;
+      background: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .splash-title {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    .splash-subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideDown {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(100px); opacity: 0; }
+    }
+
+      /* 상담 로딩 애니메이션 */
+  @keyframes pulse {
+
+    0% {
+      opacity: 0.5;
+    }
+
+    50% {
+      opacity: 1;
+    }
+    
+  </style>
+
+  <title>한성대 일학습병행</title>
+
+  <meta name="theme-color" content="#56CCF2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="한성대 일학습">
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="https://raw.githubusercontent.com/ipp2-cmd/hansung-push/main/logo.png">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ipp2-cmd/hansung-push/main/logo.png">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f7fa;
+  /* padding-bottom 중복 제거 후 통합 */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+    
+    .header {
+      background: linear-gradient(135deg, #0066CC 0%, #004999 100%);
+      color: white;
+      padding: 30px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .title { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+    .subtitle { font-size: 18px; opacity: 0.95; }
+    
+    .card {
+      background: white;
+      margin: 20px;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .card h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .list-item {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .list-item:last-child { border-bottom: none; }
+    .list-item:active { background: #f8f9fa; }
+    
+    .item-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .item-meta {
+      font-size: 13px;
+      color: #95a5a6;
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    
+    .badge-important {
+      background: #e74c3c;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .badge-category {
+      background: #ecf0f1;
+      color: #7f8c8d;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary { background: #3498db; color: white; }
+    .btn-primary:active { background: #2980b9; transform: scale(0.98); }
+    .btn-success { background: #2ecc71; color: white; }
+    .btn-outline { background: white; border: 2px solid #3498db; color: #3498db; }
+    
+    .form-group { margin-bottom: 18px; }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 14px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #dfe6e9;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border 0.2s;
+    }
+    
+    .form-control:focus { outline: none; border-color: #3498db; }
+    
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    select.form-control {
+      appearance: none;
+      background: white url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path fill="%23999" d="M6 9L1 4h10z"/></svg>') no-repeat right 12px center;
+      padding-right: 35px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    
+    .modal.show { display: block; }
+    
+    .modal-content {
+      background: white;
+      margin: 50px auto;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 16px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 { font-size: 18px; color: #2c3e50; }
+    
+    .modal-close {
+      font-size: 28px;
+      color: #95a5a6;
+      cursor: pointer;
+      line-height: 1;
+      border: none;
+      background: none;
+    }
+    
+    .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 15px 20px; border-top: 1px solid #ecf0f1; }
+    
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid #ecf0f1;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: #95a5a6;
+    }
+    
+    .nav-item.active { color: #3498db; }
+    .nav-icon { font-size: 20px; display: block; margin-bottom: 2px; }
+    .nav-label { font-size: 10px; font-weight: 600; }
+    
+    .loading { text-align: center; padding: 40px 20px; color: #95a5a6; }
+    .empty { text-align: center; padding: 40px 20px; color: #95a5a6; }
+    .hidden { display: none !important; }
+    
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-waiting { background: #fff3cd; color: #856404; }
+    .status-processing { background: #cfe2ff; color: #084298; }
+    .status-completed { background: #d1e7dd; color: #0f5132; }
+    
+    .notice-detail { line-height: 1.6; }
+    
+    .notice-detail .meta {
+      color: #7f8c8d;
+      font-size: 13px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .notice-detail .content {
+      font-size: 15px;
+      color: #2c3e50;
+      white-space: pre-wrap;
+    }
+  </style>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "6f3b4e8a-d211-4ecd-9e0e-045900f10001"
+    });
+    console.log('OneSignal 자동 초기화 완료');
+
+    // 권한 확인 및 요청도 여기서!
+    var permission = OneSignal.Notifications.permission;
+    console.log('현재 권한:', permission);
+
+    if (!permission) {
+      setTimeout(async function() {
+        console.log('권한 요청 시작');
+        await OneSignal.Slidedown.promptPush();
+      }, 3000);
+    }
+  });
+</script>
+</head>
+<body>
+
+  <!-- 스플래시 스크린 -->
+<div id="splash-screen">
+  <div class="splash-icon" style="animation: scaleIn 0.3s ease-out;">
+    <img src="https://raw.githubusercontent.com/ipp2-cmd/hansung-push/main/splash.png" 
+         style="width: 80px; height: 80px; border-radius: 16px;">
+  </div>
+  <div class="splash-title" style="animation: fadeIn 0.5s ease-out 0.1s both;">한성대학교</div>
+  <div class="splash-subtitle" style="animation: fadeIn 0.5s ease-out 0.2s both;">일학습병행 공동훈련센터</div>
+</div>
+
+  <div id="pushBridgeContainer"></div>
+  
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="title">한성대학교</div>
+    <div class="subtitle">일학습병행 공동훈련센터</div>
+  </div>
+
+  <!-- 메인 컨텐츠 영역 -->
+  <div id="mainContent"></div>
+
+  <!-- 하단 네비게이션 -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-tab="home" onclick="switchTab(event, 'home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">홈</div>
+    </div>
+    <div class="nav-item" data-tab="notices" onclick="switchTab(event, 'notices')">
+      <div class="nav-icon">📢</div>
+      <div class="nav-label">공지사항</div>
+    </div>
+      <!-- ✅ 캘린더 추가 -->
+  <div class="nav-item" data-tab="calendar" onclick="switchTab(event, 'calendar')">
+    <div class="nav-icon">🗓️</div>
+    <div class="nav-label">일정</div>
+  </div>
+    <div class="nav-item" data-tab="files" onclick="switchTab(event, 'files')">
+      <div class="nav-icon">📚</div>
+      <div class="nav-label">자료실</div>
+    </div>
+    <div class="nav-item" data-tab="consulting" onclick="switchTab(event, 'consulting')">
+      <div class="nav-icon">💬</div>
+      <div class="nav-label">상담</div>
+    </div>
+<div class="nav-item" data-tab="my" onclick="switchTab(event, 'my')">
+  <div style="position: relative; display: inline-block;">
+    <div class="nav-icon">👤</div>
+    <span id="myBadge" style="
+      display: none;
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
+    "></span>
+  </div>
+  <div class="nav-label">MY</div>
+</div>
+  </div>
+
+  <!-- 회원가입 모달 -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>회원가입</h3>
+        <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="registerForm">
+          <div class="form-group">
+            <label>이름 *</label>
+            <input type="text" class="form-control" id="reg_name" required>
+          </div>
+          <div class="form-group">
+            <label>학번 *</label>
+            <input type="text" class="form-control" id="reg_studentId" placeholder="예: 20241234" required>
+          </div>
+          <div class="form-group">
+            <label>비밀번호 * (4자리 이상)</label>
+            <input type="password" class="form-control" id="reg_password" minlength="4" required>
+          </div>
+          <div class="form-group">
+            <label>비밀번호 확인 *</label>
+            <input type="password" class="form-control" id="reg_password_confirm" minlength="4" required>
+          </div>
+          <div class="form-group">
+            <label>학부(트랙) *</label>
+            <input type="text" class="form-control" id="reg_department" placeholder="예: 컴퓨터공학부" required>
+          </div>
+          <div class="form-group">
+          <label>학습기업명 *</label>
+          <input type="text" class="form-control" id="reg_company" placeholder="예: 삼성전자" required>
+          </div>
+          <div class="form-group">
+            <label>연락처 *</label>
+            <input type="tel" class="form-control" id="reg_phone" placeholder="예: 010-1234-5678" required>
+          </div>
+          <div class="form-group">
+            <label>이메일 *</label>
+            <input type="email" class="form-control" id="reg_email" placeholder="예: ipp2@hansung.ac.kr" required>
+          </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitRegister()">가입하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인 모달 -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>로그인</h3>
+        <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>학번</label>
+          <input type="text" class="form-control" id="login_studentId" placeholder="예: 20241234">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" class="form-control" id="login_password" placeholder="비밀번호">
+        </div>
+        <div style="text-align: right; margin-bottom: 15px;">
+          <a href="#" onclick="event.preventDefault(); closeModal('loginModal'); showResetPasswordModal();"
+             style="color: #e74c3c; font-size: 13px;">비밀번호를 잊으셨나요?</a>
+        </div>
+        <div style="text-align: center;">
+          <a href="#" onclick="event.preventDefault(); closeModal('loginModal'); showRegisterModal();"
+             style="color: #3498db; font-size: 14px;">회원가입 하기</a>
+        </div>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <span style="font-size: 13px; color: #7f8c8d;">💡 더 편리하게 사용하고 싶으신가요?</span>
+          </div>
+          <button onclick="showInstallGuide();"
+                  style="width: 100%; padding: 10px; background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+                         color: white; border: none; border-radius: 8px; font-size: 14px;
+                         font-weight: 600; cursor: pointer;">
+            📱 앱으로 설치하기
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="doStudentLogin()">로그인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비밀번호 찾기 모달 -->
+  <div id="resetPasswordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>비밀번호 찾기</h3>
+        <button class="modal-close" onclick="closeModal('resetPasswordModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;">
+          등록하신 학번과 이메일을 입력하시면<br>임시 비밀번호를 이메일로 발송해드립니다.
+        </p>
+        <div class="form-group">
+          <label>학번 *</label>
+          <input type="text" class="form-control" id="reset_studentId" placeholder="예: 20241234" required>
+        </div>
+        <div class="form-group">
+          <label>이메일 *</label>
+          <input type="email" class="form-control" id="reset_email" placeholder="예: hong@hansung.ac.kr" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('resetPasswordModal')">취소</button>
+        <button class="btn btn-primary" onclick="submitResetPassword()">임시 비밀번호 발송</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비밀번호 변경 모달 -->
+  <div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>비밀번호 변경</h3>
+        <button class="modal-close" onclick="closeModal('changePasswordModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>현재 비밀번호 *</label>
+          <input type="password" class="form-control" id="change_currentPassword" required>
+        </div>
+        <div class="form-group">
+          <label>새 비밀번호 * (4자리 이상)</label>
+          <input type="password" class="form-control" id="change_newPassword" minlength="4" required>
+        </div>
+        <div class="form-group">
+          <label>새 비밀번호 확인 *</label>
+          <input type="password" class="form-control" id="change_newPasswordConfirm" minlength="4" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('changePasswordModal')">취소</button>
+        <button class="btn btn-primary" onclick="submitChangePassword()">비밀번호 변경</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공지 상세 모달 -->
+  <div id="noticeDetailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>공지사항</h3>
+        <button class="modal-close" onclick="closeModal('noticeDetailModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="noticeDetailContent" class="notice-detail"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상담 신청 모달 -->
+  <div id="consultingModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>1:1 상담 신청</h3>
+        <button class="modal-close" onclick="closeModal('consultingModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="consultingForm">
+          <div class="form-group">
+            <label>상담 유형 *</label>
+            <select class="form-control" id="consult_type" required>
+              <option value="">선택하세요</option>
+              <option value="학습">학습 상담</option>
+              <option value="기업">학습기업 관련</option>
+              <option value="진로">진로 상담</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>제목 *</label>
+            <input type="text" class="form-control" id="consult_title" required>
+          </div>
+          <div class="form-group">
+            <label>내용 *</label>
+            <textarea class="form-control" id="consult_content" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>희망 상담 일시</label>
+            <input type="datetime-local" class="form-control" id="consult_hopeDate">
+          </div>
+<div class="form-group">
+  <div style="display: flex; align-items: center; gap: 10px; 
+              padding: 12px; background: #f8f9fa; border-radius: 8px;">
+    <input type="checkbox" id="consult_anonymous" 
+           style="width: 20px; height: 20px; cursor: pointer;">
+    <div>
+      <label for="consult_anonymous" 
+             style="font-weight: 600; cursor: pointer; margin: 0;">
+        익명으로 신청
+      </label>
+      <div style="font-size: 12px; color: #7f8c8d; margin-top: 2px;">
+        익명 선택시 담당자에게 이름/학번이 표시되지 않습니다
+      </div>
+    </div>
+  </div>
+</div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+  id="submitConsultBtn"
+  class="btn btn-success"
+  onclick="submitConsulting()"
+>
+  상담 신청하기
+</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 전역 변수 ==========
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw_VUdjQbnNZtGTDlEagLHAysfzgIFYBl6vOdoGZQOHV3pULpLe7EGlVwNcDfrQZxDNhA/exec';
+    
+    let currentUser = null;
+    let consultingRefreshTimer = null;
+    let currentTab = 'home';
+    let deferredPrompt = null;
+    let installBannerShown = false;
+
+    // ========== PWA 설치 처리 ==========
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (currentUser && !installBannerShown) {
+        setTimeout(() => showInstallPrompt(), 3000);
+      }
+    });
+
+    function showInstallPrompt() {
+      const dismissed = localStorage.getItem('pwa-install-dismissed');
+      const dismissedTime = localStorage.getItem('pwa-install-dismissed-time');
+      
+      if (dismissed && dismissedTime) {
+        const daysSince = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
+        if (daysSince < 1) return;
+      }
+      
+      installBannerShown = true;
+      
+      const banner = document.createElement('div');
+      banner.id = 'install-banner';
+      banner.innerHTML = `
+        <div style="
+          position: fixed; bottom: 80px; left: 20px; right: 20px;
+          background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+          color: white; padding: 15px 20px; border-radius: 12px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 9999;
+          animation: slideUp 0.3s ease-out;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 32px;">📱</div>
+            <div style="flex: 1;">
+              <div style="font-weight: bold; font-size: 15px; margin-bottom: 4px;">앱으로 설치하기</div>
+              <div style="font-size: 12px; opacity: 0.9;">홈 화면에 추가하고 빠르게 접속하세요!</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="installPWA()" style="
+              flex: 1; background: white; color: #2F80ED;
+              border: none; padding: 10px; border-radius: 8px;
+              font-weight: bold; font-size: 14px; cursor: pointer;">설치</button>
+            <button onclick="dismissInstallPrompt()" style="
+              background: rgba(255,255,255,0.2); color: white;
+              border: 1px solid white; padding: 10px 16px;
+              border-radius: 8px; font-size: 14px; cursor: pointer;">나중에</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(banner);
+    }
+
+    function installPWA() {
+      const banner = document.getElementById('install-banner');
+      if (!deferredPrompt) {
+        if (banner) banner.remove();
+        showInstallGuide();
+        return;
+      }
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (banner) banner.remove();
+        deferredPrompt = null;
+        localStorage.setItem('pwa-install-dismissed', 'true');
+        localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+      });
+    }
+
+    function dismissInstallPrompt() {
+      const banner = document.getElementById('install-banner');
+      if (banner) {
+        banner.style.animation = 'slideDown 0.3s ease-out';
+        setTimeout(() => banner.remove(), 300);
+      }
+      localStorage.setItem('pwa-install-dismissed', 'true');
+      localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+    }
+
+    // ========== 초기화 ==========
+window.onload = function() {
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  var isIOSStandalone = window.navigator.standalone === true;
+  var isInstalled = isStandalone || isIOSStandalone;
+
+  const isTest = new URLSearchParams(window.location.search).get('test');
+
+  var splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.style.display = 'none';
+    splash.remove();
+  }
+
+  if (!isInstalled && !isTest) {
+    showInstallGuideScreen();
+    return;
+  }
+  
+  const savedUser = localStorage.getItem('user');
+if (savedUser) {
+  try {
+    currentUser = JSON.parse(savedUser);
+    // ✅ 앱 실행시 최신 알림 수 서버에서 받아오기
+    callAPI('getPushHistory', { studentId: currentUser.studentId })
+      .then(result => {
+        if (result.success) {
+          localStorage.setItem('cache_notifications', JSON.stringify(result.data));
+          updateMyBadge();
+        }
+      }).catch(e => console.log('알림 업데이트 실패:', e));
+    
+    const tabParam = new URLSearchParams(window.location.search).get('tab');
+    const targetTab = tabParam || 'home';
+    switchTab(null, 'home');
+  
+  } catch(e) {
+    localStorage.removeItem('user');
+      showLoginModal();
+    }
+  } else {
+    showLoginModal();
+  }
+};
+    // ========== API 호출 ==========
+    async function callAPI(action, data = {}) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action, ...data })
+        });
+        return await response.json();
+      } catch(error) {
+        console.error('API Error:', error);
+       // alert('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        return { success: false, message: error.message };
+      }
+    }
+
+    // ========== 인증 ==========
+    function showLoginModal() {
+      document.getElementById('loginModal').classList.add('show');
+    }
+
+    function showRegisterModal() {
+      closeModal('loginModal');
+      document.getElementById('registerModal').classList.add('show');
+    }
+
+    function showResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.add('show');
+    }
+
+    function showChangePasswordModal() {
+      document.getElementById('changePasswordModal').classList.add('show');
+    }
+
+    async function submitRegister() {
+      const name = document.getElementById('reg_name').value.trim();
+      const studentId = document.getElementById('reg_studentId').value.trim();
+      const password = document.getElementById('reg_password').value;
+      const passwordConfirm = document.getElementById('reg_password_confirm').value;
+      const department = document.getElementById('reg_department').value.trim();
+      const company = document.getElementById('reg_company').value.trim();  // ✅ 추가
+      const phone = document.getElementById('reg_phone').value.trim();
+      const email = document.getElementById('reg_email').value.trim();
+      
+      if (!name || !studentId || !password || !department || !phone || !email) {
+        alert('필수 항목을 모두 입력해주세요');
+        return;
+      }
+      if (password.length < 4) {
+        alert('비밀번호는 4자리 이상 입력해주세요');
+        return;
+      }
+      if (password !== passwordConfirm) {
+        alert('비밀번호가 일치하지 않습니다');
+        return;
+      }
+      
+      const result = await callAPI('register', { name, studentId, password, department, company, phone, email });
+      
+      if (result.success) {
+        alert(result.message + '\n로그인 화면으로 이동합니다.');
+        closeModal('registerModal');
+        document.getElementById('registerForm').reset();
+        showLoginModal();
+      } else {
+        alert(result.message);
+      }
+    }
+
+async function doStudentLogin() {
+  const studentId = document.getElementById('login_studentId').value.trim();
+  const password = document.getElementById('login_password').value;
+  
+  if (!studentId || !password) {
+    alert('학번과 비밀번호를 입력해주세요');
+    return;
+  }
+
+  const result = await callAPI('login', { studentId, password });
+  
+  if (result.success) {
+    currentUser = result.data;
+    localStorage.setItem('user', JSON.stringify(currentUser));
+    closeModal('loginModal');
+    initPushNotification();
+    updateMyBadge(); // ✅ 추가
+    switchTab(null, 'home');
+  } else {
+    alert(result.message);
+  }
+}
+
+function logout() {
+  if (confirm('로그아웃 하시겠습니까?')) {
+    currentUser = null;
+    localStorage.removeItem('user');
+    document.getElementById('mainContent').innerHTML = '';
+    showLoginModal();
+  }
+}
+
+    // ========== 탭 전환 ==========
+   function switchTab(event, tab) {
+  // 로그인 안된 상태면 home 포함 모두 로그인으로
+  if (!currentUser) {
+    showLoginModal();
+    return;
+  }
+  
+  currentTab = tab;
+  
+  document.querySelectorAll('.nav-item').forEach(item => 
+    item.classList.remove('active')
+  );
+  
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+  } else {
+    const targetNav = document.querySelector(`.nav-item[data-tab="${tab}"]`);
+    if (targetNav) targetNav.classList.add('active');
+  }
+  
+  switch(tab) {
+    case 'home':       showHome();           break;
+    case 'notices':    showNotices();        break;
+    case 'calendar':   showCalendar();       break; 
+    case 'files':      showFiles();          break;
+    case 'consulting': showConsultingList(); break;
+    case 'my':         showMyPage();         break;
+  }
+}
+
+    // ========== 홈 화면 ==========
+async function showHome() {
+  const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone === true;
+
+  const installBanner = !isInstalled ? `
+    <div class="card" style="background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+                              color: white; cursor: pointer;" onclick="showInstallGuide()">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 36px;">📱</div>
+        <div style="flex: 1;">
+          <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">앱으로 설치하기</div>
+          <div style="font-size: 13px; opacity: 0.9;">홈 화면에 추가하고 더 빠르게 접속하세요!</div>
+        </div>
+        <div style="font-size: 24px;">›</div>
+      </div>
+    </div>
+  ` : '';
+  
+  document.getElementById('mainContent').innerHTML = `
+    ${installBanner}
+    <div class="card">
+      <h3>👋 환영합니다</h3>
+      <p style="color: #7f8c8d; margin-bottom: 15px;">
+        ${currentUser ? currentUser.name + '(' + currentUser.studentId + ')님' : '로그인이 필요합니다'}
+      </p>
+      ${currentUser ? `
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; font-size: 14px; color: #2c3e50;">
+          <div style="margin-bottom: 4px;">📚 ${currentUser.department}</div>
+          <div>📧 ${currentUser.email}</div>
+        </div>
+      ` : ''}
+    </div>
+    <!-- ✅ 알림 설정 섹션 추가 -->
+    <div id="pushStatusCard"></div>
+    
+    <!-- ✅ 이 줄 추가 -->
+    <div id="surveyBanner"></div>
+    
+    <div class="card">
+      <h3>📢 최근 공지사항</h3>
+      <div id="recentNotices"><div class="loading">로딩중...</div></div>
+    </div>    
+  `;
+
+  const CACHE_TTL = 5 * 60 * 1000; // 5분
+
+// ✅ 만족도조사 확인
+// ✅ 만족도조사 - 백그라운드로 처리
+callAPI('getActiveSurvey').then(surveyResult => {
+  if (surveyResult.success) {
+    let surveyHtml = '';
+    surveyResult.data.forEach(survey => {
+      surveyHtml += `
+        <div class="card" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+                                  color: white; cursor: pointer;"
+             onclick="window.open('${survey['구글폼URL']}', '_blank')">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 36px;">📋</div>
+            <div style="flex: 1;">
+              <div style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">
+                ${survey['제목']}
+              </div>
+              <div style="font-size: 13px; opacity: 0.9;">
+                참여 기간: ${formatDate(survey['시작일'])} ~ ${formatDate(survey['종료일'])}
+              </div>
+            </div>
+            <div style="font-size: 24px;">›</div>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('surveyBanner').innerHTML = surveyHtml;
+  }
+}).catch(e => console.log('만족도조사 조회 실패:', e));
+  // ✅ 공지사항 캐시 처리
+  const cachedNotices = localStorage.getItem('cache_notices');
+  const cachedNoticesTime = localStorage.getItem('cache_notices_time');
+  const noticesExpired = !cachedNoticesTime || (Date.now() - parseInt(cachedNoticesTime)) > CACHE_TTL;
+
+  if (cachedNotices && !noticesExpired) {
+    // 캐시 즉시 표시
+    displayNoticeList(JSON.parse(cachedNotices).slice(0, 3), 'recentNotices');
+  } else {
+    // 새로 받아오기
+    try {
+      const noticesResult = await callAPI('getNotices');
+      if (noticesResult.success) {
+        localStorage.setItem('cache_notices', JSON.stringify(noticesResult.data));
+        localStorage.setItem('cache_notices_time', Date.now().toString());
+        displayNoticeList(noticesResult.data.slice(0, 3), 'recentNotices');
+      } else {
+        document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
+      }
+    } catch(e) {
+      document.getElementById('recentNotices').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
+    }
+     // ✅ 여기에 추가
+  checkPushStatus();
+  }
+}
+    clearInterval(
+  consultingRefreshTimer
+);
+    // ========== 공지사항 ==========
+async function showNotices() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <h3>📢 공지사항</h3>
+      <div id="noticeList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  const CACHE_TTL = 5 * 60 * 1000; // 5분
+  const cached = localStorage.getItem('cache_notices');
+  const cachedTime = localStorage.getItem('cache_notices_time');
+  const isExpired = !cachedTime || (Date.now() - parseInt(cachedTime)) > CACHE_TTL;
+
+  // 캐시 있으면 즉시 표시
+  if (cached && !isExpired) {
+    displayNoticeList(JSON.parse(cached), 'noticeList');
+  } else {
+    const result = await callAPI('getNotices');
+    if (result.success) {
+      localStorage.setItem('cache_notices', JSON.stringify(result.data));
+      localStorage.setItem('cache_notices_time', Date.now().toString());
+      displayNoticeList(result.data, 'noticeList');
+    } else {
+      document.getElementById('noticeList').innerHTML = '<div class="empty">공지사항을 불러올 수 없습니다</div>';
+    }
+  }
+}
+
+    function displayNoticeList(notices, targetId) {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      
+      if (notices.length === 0) {
+        target.innerHTML = '<div class="empty">공지사항이 없습니다</div>';
+        return;
+      }
+      
+      let html = '';
+      notices.forEach(notice => {
+        html += `
+          <div class="list-item" onclick="showNoticeDetail(${notice['번호']})">
+            <div class="item-title">
+              ${notice['중요공지'] ? '<span class="badge-important">중요</span>' : ''}
+              ${notice['제목']}
+            </div>
+            <div class="item-meta">
+              <span class="badge-category">${notice['카테고리']}</span>
+              <span>${formatDate(notice['작성일'])}</span>
+              <span>views ${notice['조회수']}</span>
+            </div>
+          </div>
+        `;
+      });
+      target.innerHTML = html;
+    }
+
+async function showNoticeDetail(id) {
+
+  if (typeof callAPI === 'function' && typeof currentUser !== 'undefined') {
+    callAPI('markNoticeRead', {
+      noticeId: id,
+      studentId: currentUser.studentId 
+    });
+  }
+  
+  const CACHE_TTL =
+    5 * 60 * 1000; // 5분
+
+  const cacheKey =
+    `notice_detail_${id}`;
+
+  const cacheTimeKey =
+    `notice_detail_time_${id}`;
+
+  const cached =
+    localStorage.getItem(
+      cacheKey
+    );
+
+  const cachedTime =
+    localStorage.getItem(
+      cacheTimeKey
+    );
+
+  const isExpired =
+    !cachedTime ||
+    (
+      Date.now()
+      - parseInt(cachedTime)
+    ) > CACHE_TTL;
+
+  // 1. 팝업 즉시 열기
+  document
+    .getElementById(
+      'noticeDetailModal'
+    )
+    .classList.add('show');
+
+  // 2. 캐시 있으면 즉시 표시
+  if (cached && !isExpired) {
+
+    renderNoticeDetail(
+      JSON.parse(cached)
+    );
+
+  } else {
+
+    // 캐시 없을 때 로딩 표시
+    document
+      .getElementById(
+        'noticeDetailContent'
+      )
+      .innerHTML = `
+        <div style="
+          padding:40px;
+          text-align:center;
+          color:#7f8c8d;
+        ">
+          <div style="
+            font-size:18px;
+            margin-bottom:10px;
+          ">
+            📄 공지사항 불러오는 중...
+          </div>
+
+          <div>
+            잠시만 기다려주세요
+          </div>
+        </div>
+      `;
+  }
+
+  try {
+
+    // 3. 서버에서 최신 데이터
+    const result =
+      await callAPI(
+        'getNoticeDetail',
+        { id }
+      );
+
+    if(result.success){
+
+      const notice =
+        result.data;
+
+      // 캐시 저장
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify(notice)
+      );
+
+      localStorage.setItem(
+        cacheTimeKey,
+        Date.now().toString()
+      );
+
+      // 최신 데이터 렌더링
+      renderNoticeDetail(
+        notice
+      );
+    }
+
+  }
+
+  catch(error){
+
+    if(!cached){
+
+      document
+        .getElementById(
+          'noticeDetailContent'
+        )
+        .innerHTML = `
+          <div style="
+            padding:40px;
+            text-align:center;
+            color:#e74c3c;
+          ">
+            오류가 발생했습니다.
+          </div>
+        `;
+    }
+  }
+}
+
+function renderNoticeDetail(
+  notice
+){
+
+  document
+    .getElementById(
+      'noticeDetailContent'
+    ).innerHTML = `
+
+      <div class="meta">
+
+        <div style="
+          font-size:20px;
+          font-weight:bold;
+          color:#2c3e50;
+          margin-bottom:10px;
+        ">
+
+          ${
+            notice['중요공지']
+            ? '<span class="badge-important">중요</span> '
+            : ''
+          }
+
+          ${notice['제목']}
+        </div>
+
+        <div style="
+          display:flex;
+          gap:15px;
+          flex-wrap:wrap;
+        ">
+          <span>
+            📁
+            ${notice['카테고리']}
+          </span>
+
+          <span>
+            ✍️
+            ${notice['작성자']}
+          </span>
+
+          <span>
+            📅
+            ${formatDate(
+              notice['작성일']
+            )}
+          </span>
+
+          <span>
+            views
+            ${notice['조회수']}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="content">
+        ${notice['내용']}
+      </div>
+
+      ${
+        notice['첨부파일URL']
+        ? `
+        <div style="
+          margin-top:20px;
+          padding-top:20px;
+          border-top:
+            1px solid #ecf0f1;
+        ">
+          <a
+            href="${notice['첨부파일URL']}"
+            target="_blank"
+            style="
+              color:#3498db;
+              text-decoration:none;
+            "
+          >
+            📎 첨부파일 보기
+          </a>
+        </div>
+        `
+        : ''
+      }
+    `;
+}
+    
+// ========== 캘린더 ==========
+function showCalendar() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <h3>🗓️ 일정</h3>
+      <div style="
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 12px;
+      ">
+        <iframe 
+          src="https://calendar.google.com/calendar/embed?src=c_b036c3836ef4d68807a2bdf8a845e0d72613e97971b50518ad8f863663f141c5%40group.calendar.google.com&ctz=Asia%2FSeoul&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&hl=ko"
+          style="
+            border: 0;
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+          "
+          frameborder="0"
+          scrolling="no">
+        </iframe>
+      </div>
+    </div>
+  `;
+}
+    
+    // ========== 자료실 ==========
+async function showFiles() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <h3>📚 자료실</h3>
+      <div id="fileList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  const CACHE_TTL = 5 * 60 * 1000;
+  const cached = localStorage.getItem('cache_files');
+  const cachedTime = localStorage.getItem('cache_files_time');
+  const isExpired = !cachedTime || (Date.now() - parseInt(cachedTime)) > CACHE_TTL;
+
+  if (cached && !isExpired) {
+    window._filesData = JSON.parse(cached);
+  } else {
+    const result = await callAPI('getFiles');
+    if (result.success) {
+      localStorage.setItem('cache_files', JSON.stringify(result.data));
+      localStorage.setItem('cache_files_time', Date.now().toString());
+      window._filesData = result.data;
+    } else {
+      document.getElementById('fileList').innerHTML = '<div class="empty">자료를 불러올 수 없습니다</div>';
+      return;
+    }
+  }
+
+  // 폴더형 카테고리 목록 표시
+  showFileCategories();
+}
+
+function showFileCategories() {
+  const target = document.getElementById('fileList');
+  
+  const categories = [
+    { name: '외부평가', icon: '📝' },
+    { name: '학습모듈', icon: '📖' },
+    { name: '안내자료 및 기타', icon: '📋' }
+  ];
+
+  let html = '';
+  categories.forEach(cat => {
+    const count = window._filesData.filter(f => f['카테고리'] === cat.name).length;
+    html += `
+      <div class="list-item" onclick="showFilesByCategory('${cat.name}', '${cat.icon}')"
+           style="display: flex; align-items: center; gap: 15px;">
+        <div style="font-size: 40px;">${cat.icon}</div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; font-size: 16px; color: #2c3e50;">${cat.name}</div>
+          <div style="font-size: 13px; color: #95a5a6; margin-top: 4px;">총 ${count}개</div>
+        </div>
+        <div style="font-size: 20px; color: #95a5a6;">›</div>
+      </div>
+    `;
+  });
+
+  target.innerHTML = html;
+}
+
+function showFilesByCategory(category, icon) {
+  const files = window._filesData.filter(f => f['카테고리'] === category);
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <button onclick="showFiles()" 
+                style="background: none; border: none; font-size: 20px; cursor: pointer;">
+          ←
+        </button>
+        <h3 style="margin: 0;">${icon} ${category}</h3>
+      </div>
+      <div id="fileList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  displayFileList(files, 'fileList');
+}
+
+function displayFileList(files, targetId) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  
+  if (files.length === 0) {
+    target.innerHTML = '<div class="empty">등록된 자료가 없습니다</div>';
+    return;
+  }
+  
+  // 전역 배열에 파일 목록 저장
+  window._fileList = files;
+  
+  let html = '';
+  files.forEach((file, index) => {
+    html += `
+      <div class="list-item">
+        <div class="item-title">📄 ${file['제목']}</div>
+        <div style="font-size: 13px; color: #7f8c8d; margin: 6px 0;">${file['설명']}</div>
+        <div class="item-meta">
+          <span class="badge-category">${file['카테고리']}</span>
+          <span>${formatDate(file['업로드일'])}</span>
+          <span>⬇ ${file['다운로드수']}</span>
+        </div>
+        <div style="margin-top: 10px; display: flex; gap: 8px;">
+          <button onclick="previewFile(${index})"
+                  class="btn btn-primary"
+                  style="padding: 8px 16px; font-size: 14px;">
+            🔍 미리보기
+          </button>
+          <a href="${file['파일URL']}" target="_blank"
+             class="btn btn-outline"
+             style="padding: 8px 16px; font-size: 14px; text-decoration: none;">
+            ⬇ 다운로드
+          </a>
+        </div>
+      </div>
+    `;
+  });
+  target.innerHTML = html;
+}
+
+function previewFile(index) {
+  const file = window._fileList[index];
+  const previewUrl = file['파일URL'].replace('/view', '/preview');
+  document.getElementById('previewTitle').textContent = file['제목'];
+  document.getElementById('previewFrame').src = previewUrl;
+  document.getElementById('filePreviewModal').classList.add('show');
+}
+    // ========== 상담 ==========
+async function showConsultingList() {
+  document.getElementById('mainContent').innerHTML = `
+
+<div style="margin-top: 20px; margin-bottom: 20px; text-align: center;">
+  <a href="http://pf.kakao.com/_fgkgK/chat" 
+     target="_blank" 
+     style="display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; padding: 14px 20px; background-color: #FDF1A9; color: #3A1D1D; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="#3A1D1D" style="margin-right: 8px;">
+      <path d="M12 3c5.523 0 10 3.582 10 8s-4.477 8-10 8c-1.282 0-2.505-.213-3.618-.598l-3.565 1.783a1 1 0 0 1-1.408-1.258l1.3-2.316C3.045 15.011 2 13.084 2 11c0-4.418 4.477-8 10-8z"/>
+    </svg>
+    
+    카카오톡 상담하기
+  </a>
+</div>
+    
+    <div class="card">
+      <h3>💬 1:1 상담</h3>
+      <button class="btn btn-success" onclick="openConsultingModal()" style="margin-bottom: 10px;">
+        상담 신청하기
+      </button>
+      <button class="btn btn-outline" onclick="showFAQ()" style="margin-bottom: 15px;">
+        ❓ 자주 묻는 질문 (FAQ)
+      </button>
+<div id="consultingList">
+  <div style="padding:10px 0;">
+    
+    <div style="
+      background:#f4f6f8;
+      height:70px;
+      border-radius:10px;
+      margin-bottom:12px;
+      animation:pulse 1.2s infinite;
+    "></div>
+
+    <div style="
+      background:#f4f6f8;
+      height:70px;
+      border-radius:10px;
+      margin-bottom:12px;
+      animation:pulse 1.2s infinite;
+    "></div>
+
+    <div style="
+      background:#f4f6f8;
+      height:70px;
+      border-radius:10px;
+      animation:pulse 1.2s infinite;
+    "></div>
+
+  </div>
+</div>
+    </div>
+  `;
+
+const CACHE_TTL = 1 * 60 * 1000;
+
+const cached =
+  localStorage.getItem(
+    'cache_consulting_' +
+    currentUser.studentId
+  );
+
+const cachedTime =
+  localStorage.getItem(
+    'cache_consulting_time_' +
+    currentUser.studentId
+  );
+
+const isExpired =
+  !cachedTime ||
+  (
+    Date.now() -
+    parseInt(cachedTime)
+  ) > CACHE_TTL;
+
+
+// 1. 캐시 있으면 먼저 보여줌
+if (cached && !isExpired) {
+
+  displayConsultingList(
+    JSON.parse(cached)
+  );
+
+  // 기존 타이머 제거
+if (consultingRefreshTimer) {
+  clearInterval(
+    consultingRefreshTimer
+  );
+}
+
+// 30초마다 최신 상담 자동 갱신
+consultingRefreshTimer =
+  setInterval(
+    refreshConsultingSilently,
+    30000
+  );
+}
+
+
+// 2. 최신 데이터 항상 다시 가져오기
+try {
+
+  const result =
+    await callAPI(
+      'getMyConsulting',
+      {
+        studentId:
+          currentUser.studentId
+      }
+    );
+
+  if (result.success) {
+
+    localStorage.setItem(
+      'cache_consulting_' +
+      currentUser.studentId,
+      JSON.stringify(
+        result.data
+      )
+    );
+
+    localStorage.setItem(
+      'cache_consulting_time_' +
+      currentUser.studentId,
+      Date.now().toString()
+    );
+
+    // 최신 데이터 다시 그림
+    displayConsultingList(
+      result.data
+    );
+
+  } else {
+
+    document
+      .getElementById(
+        'consultingList'
+      ).innerHTML =
+      '<div class="empty">상담 내역이 없습니다</div>';
+  }
+
+} catch(e) {
+
+  console.error(
+    '상담 조회 오류',
+    e
+  );
+}
+}
+
+async function refreshConsultingSilently() {
+
+  console.log(
+  '상담 자동갱신 실행'
+);
+
+  try {
+
+    const result =
+      await callAPI(
+        'getMyConsulting',
+        {
+          studentId:
+            currentUser.studentId
+        }
+      );
+
+    if (result.success) {
+
+ console.log(
+    '상담 개수:',
+    result.data.length
+  );
+      
+      // 최신 캐시 저장
+      localStorage.setItem(
+        'cache_consulting_' +
+        currentUser.studentId,
+        JSON.stringify(
+          result.data
+        )
+      );
+
+      localStorage.setItem(
+        'cache_consulting_time_' +
+        currentUser.studentId,
+        Date.now().toString()
+      );
+
+      // 무조건 다시 렌더링
+      displayConsultingList(
+        result.data
+      );
+    }
+
+  } catch (e) {
+
+    console.log(
+      '상담 자동갱신 실패',
+      e
+    );
+  }
+}
+    
+async function showFAQ() {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <button onclick="showConsultingList()" 
+                style="background: none; border: none; font-size: 20px; cursor: pointer;">
+          ←
+        </button>
+        <h3 style="margin: 0;">❓ 자주 묻는 질문</h3>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <input type="text" id="faqSearch" 
+               placeholder="🔍 질문 검색..." 
+               oninput="filterFAQ()"
+               style="width: 100%; padding: 12px 14px; border: 1px solid #dfe6e9; 
+                      border-radius: 8px; font-size: 15px;">
+      </div>
+      
+      <div id="faqList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  const CACHE_TTL = 30 * 60 * 1000; // 30분
+  const cached = localStorage.getItem('cache_faq');
+  const cachedTime = localStorage.getItem('cache_faq_time');
+  const isExpired = !cachedTime || (Date.now() - parseInt(cachedTime)) > CACHE_TTL;
+
+  if (cached && !isExpired) {
+    window._faqData = JSON.parse(cached);
+    renderFAQ(window._faqData);
+  } else {
+    const result = await callAPI('getFAQ');
+    const target = document.getElementById('faqList');
+
+    if (!result.success || result.data.length === 0) {
+      target.innerHTML = '<div class="empty">등록된 FAQ가 없습니다</div>';
+      return;
+    }
+
+    localStorage.setItem('cache_faq', JSON.stringify(result.data));
+    localStorage.setItem('cache_faq_time', Date.now().toString());
+    window._faqData = result.data;
+    renderFAQ(result.data);
+  }
+}
+
+// ✅ FAQ 렌더링 함수 분리
+function renderFAQ(faqs) {
+  const target = document.getElementById('faqList');
+  
+  if (faqs.length === 0) {
+    target.innerHTML = '<div class="empty">검색 결과가 없습니다</div>';
+    return;
+  }
+
+  // 카테고리별 그룹화
+  const categories = {};
+  faqs.forEach(faq => {
+    const cat = faq['카테고리'];
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(faq);
+  });
+
+  let html = '';
+  Object.keys(categories).forEach(cat => {
+    html += `
+      <div style="margin-bottom: 20px;">
+        <div style="font-weight: bold; font-size: 15px; color: #3498db; 
+                    margin-bottom: 10px; padding-bottom: 5px; 
+                    border-bottom: 2px solid #3498db;">
+          ${cat}
+        </div>
+    `;
+    
+    categories[cat].forEach((faq, index) => {
+      const faqId = `faq_${cat}_${index}`;
+      html += `
+        <div style="border: 1px solid #ecf0f1; border-radius: 8px; margin-bottom: 8px; overflow: hidden;">
+          <div onclick="toggleFAQ('${faqId}')"
+               style="padding: 14px 16px; cursor: pointer; display: flex; 
+                      justify-content: space-between; align-items: center;
+                      background: #f8f9fa;">
+            <div style="font-weight: 600; font-size: 14px; color: #2c3e50;">
+              Q. ${faq['질문']}
+            </div>
+            <div id="${faqId}_icon" style="font-size: 18px; color: #95a5a6;">▼</div>
+          </div>
+          <div id="${faqId}" style="display: none; padding: 14px 16px; 
+                                     font-size: 14px; color: #2c3e50; 
+                                     background: white; line-height: 1.6;">
+            A. ${faq['답변'].replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `;
+    });
+    
+    html += `</div>`;
+  });
+
+  target.innerHTML = html;
+}
+
+// ✅ 검색 필터 함수
+function filterFAQ() {
+  const search = document.getElementById('faqSearch').value.toLowerCase().trim();
+  
+  if (!search) {
+    renderFAQ(window._faqData);
+    return;
+  }
+  
+  const filtered = window._faqData.filter(faq => 
+    faq['질문'].toLowerCase().includes(search) || 
+    faq['답변'].toLowerCase().includes(search)
+  );
+  
+  renderFAQ(filtered);
+}
+
+function toggleFAQ(id) {
+  const content = document.getElementById(id);
+  const icon = document.getElementById(id + '_icon');
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    icon.textContent = '▲';
+  } else {
+    content.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
+function displayConsultingList(consultings) {
+  const target = document.getElementById('consultingList');
+  if (!target) return;
+  
+  if (consultings.length === 0) {
+    target.innerHTML = '<div class="empty">상담 신청 내역이 없습니다</div>';
+    return;
+  }
+
+  const readAnswers = JSON.parse(localStorage.getItem('read_answers') || '[]');
+  
+  let html = '';
+  consultings.forEach(consult => {
+    const statusClass = 
+      consult['상태'] === '대기중' ? 'status-waiting' :
+      consult['상태'] === '진행중' ? 'status-processing' : 
+      consult['상태'] === '취소' ? 'status-waiting' : 'status-completed';
+    
+    // ✅ 익명 상담 여부 확인 (데이터에 '익명' 필드가 true면 표시)
+    // 만약 데이터 필드명이 다르다면 'consult["익명"]' 부분을 해당 필드명으로 수정하세요.
+    const isAnonymous = consult['익명여부'] === true || consult['익명여부'] === 'Y';
+    
+    const hasUnreadAnswer = consult['답변'] && !readAnswers.includes(String(consult['신청번호']));
+    const consultId = `consult_${consult['신청번호']}`;
+    
+    html += `
+      <div class="list-item" style="cursor: pointer;">
+        <div onclick="toggleConsult('${consultId}', '${consult['신청번호']}')"
+             style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div class="item-title">
+              ${consult['제목']}
+              ${isAnonymous ? '<span style="background:#95a5a6; color:white; padding:2px 6px; border-radius:4px; font-size:11px; margin-left:5px;">익명</span>' : ''}
+              <span class="status-badge ${statusClass}">${consult['상태']}</span>
+              ${hasUnreadAnswer ? '<span style="background:#e74c3c; color:white; padding:2px 6px; border-radius:4px; font-size:11px; font-weight:bold;">NEW</span>' : ''}
+            </div>
+            <div class="item-meta" style="margin-top: 4px;">
+              <span class="badge-category">${consult['상담유형']}</span>
+              <span>${formatDate(consult['신청일시'])}</span>
+            </div>
+          </div>
+          <div id="${consultId}_icon" style="font-size: 18px; color: #95a5a6; margin-left: 10px;">▼</div>
+        </div>
+
+        <div id="${consultId}" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #ecf0f1;">
+          <div style="font-size: 14px; color: #2c3e50; margin-bottom: 10px; white-space: pre-wrap;">
+            ${consult['내용']}
+          </div>
+          ${consult['답변'] ? `
+            <div style="margin-top: 12px; padding: 12px; 
+                        background: ${hasUnreadAnswer ? '#ddeeff' : '#ecf0f1'}; 
+                        border-radius: 8px;
+                        ${hasUnreadAnswer ? 'border-left: 3px solid #3498db;' : ''}">
+              <div style="font-size: 12px; color: #7f8c8d; margin-bottom: 6px;">💬 담당자 답변</div>
+              <div style="font-size: 14px; color: #2c3e50;">${consult['답변']}</div>
+            </div>
+          ` : ''}
+          ${consult['상태'] === '대기중' ? `
+            <button onclick="cancelConsulting('${consult['신청번호']}')"
+                    class="btn btn-outline"
+                    style="margin-top: 10px; padding: 8px 16px; font-size: 14px; 
+                           color: #e74c3c; border-color: #e74c3c;">
+              ✕ 상담 취소
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+  target.innerHTML = html;
+}
+
+function toggleConsult(consultId, answerId) {
+  const content = document.getElementById(consultId);
+  const icon = document.getElementById(consultId + '_icon');
+  
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    icon.textContent = '▲';
+    
+    // ✅ 펼칠 때 읽음 처리
+    const readAnswers = JSON.parse(localStorage.getItem('read_answers') || '[]');
+    if (!readAnswers.includes(String(answerId))) {
+      readAnswers.push(String(answerId));
+      localStorage.setItem('read_answers', JSON.stringify(readAnswers));
+    }
+    
+    // ✅ NEW 배지 제거
+    const newBadge = document.querySelector(`#${consultId}_icon`)?.parentElement?.querySelector('span[style*="e74c3c"]');
+    if (newBadge) newBadge.remove();
+    
+    // ✅ 답변 배경색 변경
+    const answerDiv = content.querySelector('[style*="ddeeff"]');
+    if (answerDiv) {
+      answerDiv.style.background = '#ecf0f1';
+      answerDiv.style.borderLeft = 'none';
+    }
+    
+  } else {
+    content.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
+
+    function openConsultingModal() {
+      document.getElementById('consultingModal').classList.add('show');
+    }
+
+async function submitConsulting() {
+
+  const btn =
+    document.getElementById(
+      'submitConsultBtn'
+    );
+
+  // 중복 클릭 방지
+  if (btn.disabled)
+    return;
+
+  // 버튼 잠금
+  btn.disabled = true;
+  btn.innerHTML =
+    '⏳ 신청 중...';
+
+  try {
+
+    const type =
+      document.getElementById(
+        'consult_type'
+      ).value;
+
+    const title =
+      document.getElementById(
+        'consult_title'
+      ).value.trim();
+
+    const content =
+      document.getElementById(
+        'consult_content'
+      ).value.trim();
+
+    const hopeDate =
+      document.getElementById(
+        'consult_hopeDate'
+      ).value;
+
+    const anonymous =
+      document.getElementById(
+        'consult_anonymous'
+      ).checked;
+
+    if (
+      !type ||
+      !title ||
+      !content
+    ) {
+
+      alert(
+        '필수 항목을 모두 입력해주세요'
+      );
+
+      return;
+    }
+
+    const result =
+      await callAPI(
+        'submitConsulting',
+        {
+          studentId:
+            currentUser.studentId,
+          name:
+            currentUser.name,
+          phone:
+            currentUser.phone,
+          email:
+            currentUser.email,
+          type,
+          title,
+          content,
+          hopeDate,
+          anonymous
+        }
+      );
+
+    if (
+      result.success
+    ) {
+
+      alert(
+        result.message
+      );
+
+      closeModal(
+        'consultingModal'
+      );
+
+      document.getElementById(
+        'consultingForm'
+      ).reset();
+
+      localStorage.removeItem(
+        'cache_consulting_' +
+        currentUser.studentId
+      );
+
+      localStorage.removeItem(
+        'cache_consulting_time_' +
+        currentUser.studentId
+      );
+
+      showConsultingList();
+
+    } else {
+
+      alert(
+        result.message
+      );
+    }
+
+  } catch(e){
+
+    alert(
+      '일시적인 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.'
+    );
+
+  } finally {
+
+    // 버튼 복구
+    btn.disabled =
+      false;
+
+    btn.innerHTML =
+      '상담 신청하기';
+  }
+}
+
+async function cancelConsulting(consultId) {
+  if (!confirm('상담을 취소하시겠습니까?')) return;
+  
+  const result = await callAPI('cancelConsulting', {
+    id: consultId,
+    studentId: currentUser.studentId
+  });
+  
+  if (result.success) {
+    alert(result.message);
+    // ✅ 캐시 삭제 후 새로고침
+    localStorage.removeItem('cache_consulting_' + currentUser.studentId);
+    localStorage.removeItem('cache_consulting_time_' + currentUser.studentId);
+    showConsultingList();
+  } else {
+    alert(result.message);
+  }
+}
+    
+    // 푸시알람 확인 
+    
+async function checkPushStatus() {
+  const target = document.getElementById('pushStatusCard');
+  if (!target) return;
+  
+  // ✅ 일단 카드 표시 (로딩중)
+  target.innerHTML = `
+    <div class="card" style="border-left: 4px solid #f39c12;">
+      <h3>🔔 알림 설정 확인중...</h3>
+    </div>
+  `;
+  
+  try {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      const permission = OneSignal.Notifications.permission;
+      console.log('알림 권한:', permission);
+      
+      // ✅ target 다시 가져오기
+      const t = document.getElementById('pushStatusCard');
+      if (!t) return;
+      
+      if (permission) {
+        t.innerHTML = '';
+      } else {
+        t.innerHTML = `
+          <div class="card" style="border-left: 4px solid #f39c12;">
+            <h3>🔔 알림 설정</h3>
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">⚠️</span>
+                <div>
+                  <div style="font-weight: 600; color: #856404; font-size: 14px;">알림이 설정되지 않았어요</div>
+                  <div style="font-size: 12px; color: #856404; margin-top: 2px;">
+                    알림을 허용하면 공지사항 및 상담 답변을 받을 수 있어요
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button onclick="requestPushPermission()"
+                    class="btn btn-primary">
+              🔔 알림 받기 시작
+            </button>
+          </div>
+        `;
+      }
+    });
+  } catch(e) {
+    console.log('알림 상태 확인 실패:', e);
+  }
+}
+
+async function requestPushPermission() {
+  try {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      
+      if (isIOS) {
+        const permission = await OneSignal.Notifications.requestPermission();
+        console.log('iOS 알림 허용 결과:', permission);
+      } else {
+        await OneSignal.Slidedown.promptPush({force: true});
+        console.log('Android 알림 요청 완료');
+      }
+      
+      setTimeout(() => checkPushStatus(), 2000);
+    });
+  } catch(e) {
+    console.log('알림 설정 오류:', e);
+    alert('알림 설정 중 오류가 발생했습니다');
+  }
+}
+    
+    // ========== MY 페이지 ==========
+ async function showMyPage(pushPage = 1) {
+  document.getElementById('mainContent').innerHTML = `
+    <div class="card">
+      <h3>👤 내 정보</h3>
+      <div style="background: #ecf0f1; padding: 20px; border-radius: 12px; margin: 15px 0;">
+        <div style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">${currentUser.name}</div>
+        <div style="font-size: 14px; color: #2c3e50; line-height: 1.8;">
+          <div>🎓 학번: ${currentUser.studentId}</div>
+          <div>📚 학부: ${currentUser.department}</div>
+          <div>📧 이메일: ${currentUser.email}</div>
+          <div>📱 연락처: ${currentUser.phone}</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="showChangePasswordModal()" style="margin-bottom: 10px;">
+        🔐 비밀번호 변경
+      </button>
+      <button class="btn btn-outline" onclick="logout()" style="margin-bottom: 20px;">로그아웃</button>
+    </div>
+
+    <div class="card">
+      <h3>🔔 알림함</h3>
+      <div id="notificationList"><div class="loading">로딩중...</div></div>
+    </div>
+  `;
+
+  const result = await callAPI('getPushHistory', {
+    studentId: currentUser.studentId
+  });
+
+  const target = document.getElementById('notificationList');
+
+  if (!result.success || result.data.length === 0) {
+    target.innerHTML = '<div class="empty">알림이 없습니다</div>';
+    return;
+  }
+
+   // ✅ 알림 캐시 저장 및 배지 업데이트
+localStorage.setItem('cache_notifications', JSON.stringify(result.data));
+updateMyBadge();
+   
+  const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+  const allData = result.data;
+
+  // 페이지네이션 계산
+  const pageSize = 10;
+  const totalPages = Math.ceil(allData.length / pageSize);
+  const startIndex = (pushPage - 1) * pageSize;
+  const pageData = allData.slice(startIndex, startIndex + pageSize);
+
+  let html = '';
+
+  // 알림 목록
+  pageData.forEach(push => {
+    const isRead = readList.includes(String(push['번호']));
+    html += `
+      <div class="list-item"
+           onclick="markNotificationRead('${push['번호']}')"
+           style="background: ${isRead ? 'white' : '#f0f7ff'};">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${!isRead ? 
+            '<span style="width:8px; height:8px; background:#e74c3c; border-radius:50%; display:inline-block; flex-shrink:0;"></span>' : 
+            '<span style="width:8px; height:8px; display:inline-block; flex-shrink:0;"></span>'
+          }
+          <div style="flex: 1;">
+            <div class="item-title" style="margin-bottom: 4px;">${push['제목']}</div>
+            <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 4px;">${push['내용']}</div>
+            <div style="font-size: 12px; color: #95a5a6;">
+              ${formatDate(push['발송일시'])}
+              ${push['대상'] === '그룹' ? 
+                '<span class="badge-category" style="margin-left:6px;">' + push['대상그룹'] + '</span>' : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // 페이지네이션 버튼
+  if (totalPages > 1) {
+    html += `
+      <div style="display: flex; justify-content: center; align-items: center; 
+                  gap: 8px; padding: 15px 0;">
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+      html += `
+        <button onclick="showMyPage(${i})"
+                style="width: 36px; height: 36px; border-radius: 50%; border: none;
+                       background: ${i === pushPage ? '#3498db' : '#ecf0f1'};
+                       color: ${i === pushPage ? 'white' : '#2c3e50'};
+                       font-weight: 600; cursor: pointer; font-size: 14px;">
+          ${i}
+        </button>
+      `;
+    }
+
+    html += `</div>`;
+  }
+
+  target.innerHTML = html;
+}
+
+function markNotificationRead(id) {
+  const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+  if (!readList.includes(String(id))) {
+    readList.push(String(id));
+    localStorage.setItem('read_notifications', JSON.stringify(readList));
+  }
+  showMyPage();
+}
+    // ========== 비밀번호 찾기/변경 ==========
+    async function submitResetPassword() {
+      const studentId = document.getElementById('reset_studentId').value.trim();
+      const email = document.getElementById('reset_email').value.trim();
+      
+      if (!studentId || !email) {
+        alert('학번과 이메일을 입력해주세요');
+        return;
+      }
+      
+      const result = await callAPI('resetPassword', { studentId, email });
+      
+      if (result.success) {
+        alert(result.message);
+        closeModal('resetPasswordModal');
+        document.getElementById('reset_studentId').value = '';
+        document.getElementById('reset_email').value = '';
+        showLoginModal();
+      } else {
+        alert(result.message);
+      }
+    }
+
+    async function submitChangePassword() {
+      const currentPassword = document.getElementById('change_currentPassword').value;
+      const newPassword = document.getElementById('change_newPassword').value;
+      const newPasswordConfirm = document.getElementById('change_newPasswordConfirm').value;
+      
+      if (!currentPassword || !newPassword || !newPasswordConfirm) {
+        alert('모든 항목을 입력해주세요');
+        return;
+      }
+      if (newPassword.length < 4) {
+        alert('새 비밀번호는 4자리 이상이어야 합니다');
+        return;
+      }
+      if (newPassword !== newPasswordConfirm) {
+        alert('새 비밀번호가 일치하지 않습니다');
+        return;
+      }
+      if (currentPassword === newPassword) {
+        alert('현재 비밀번호와 새 비밀번호가 동일합니다');
+        return;
+      }
+      
+      const result = await callAPI('changePassword', {
+        studentId: currentUser.studentId,
+        currentPassword,
+        newPassword
+      });
+      
+      if (result.success) {
+        alert(result.message + '\n\n보안을 위해 다시 로그인해주세요.');
+        currentUser = null;
+        localStorage.removeItem('user');
+        closeModal('changePasswordModal');
+        document.getElementById('change_currentPassword').value = '';
+        document.getElementById('change_newPassword').value = '';
+        document.getElementById('change_newPasswordConfirm').value = '';
+        showLoginModal();
+      } else {
+        alert(result.message);
+      }
+    }
+
+    // ========== 유틸리티 ==========
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    function updateMyBadge() {
+  const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
+  const allNotifications = JSON.parse(localStorage.getItem('cache_notifications') || '[]');
+  
+  // 읽지 않은 알림 수 계산
+  const unreadCount = allNotifications.filter(n => 
+    !readList.includes(String(n['번호']))
+  ).length;
+  
+  const badge = document.getElementById('myBadge');
+  if (!badge) return;
+  
+  if (unreadCount > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = unreadCount;
+    // ✅ 숫자 크기에 따라 배지 너비 자동 조정
+    badge.style.width = unreadCount > 9 ? 'auto' : '16px';
+    badge.style.padding = unreadCount > 9 ? '0 4px' : '0';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function showInstallGuideScreen() {
+  // 스플래시 즉시 제거
+  var splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.style.display = 'none';  // 추가!
+    splash.remove();
+  }
+
+  // 바디 전체를 설치 안내로 교체
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var isAndroid = /Android/.test(navigator.userAgent);
+
+  var iosSteps = `
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">공유 버튼 클릭</div>
+        <div class="step-desc">하단 가운데 공유 버튼(⬆️)을 클릭하세요</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">홈 화면에 추가</div>
+        <div class="step-desc">스크롤해서 "홈 화면에 추가"를 선택하세요</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">추가 버튼 클릭</div>
+        <div class="step-desc">우측 상단 "추가" 버튼을 클릭하세요</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">홈화면 아이콘으로 실행</div>
+        <div class="step-desc">설치 완료! 홈화면의 앱 아이콘을 눌러 실행하세요 🎉</div>
+      </div>
+    </div>
+  `;
+
+  var androidSteps = `
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">메뉴 버튼 클릭</div>
+        <div class="step-desc">우측 상단 메뉴(⋮)를 클릭하세요</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">앱 설치 선택</div>
+        <div class="step-desc">"앱 설치" 또는 "홈 화면에 추가"를 선택하세요</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">설치 버튼 클릭</div>
+        <div class="step-desc">"설치" 버튼을 클릭하세요</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">홈화면 아이콘으로 실행</div>
+        <div class="step-desc">설치 완료! 홈화면의 앱 아이콘을 눌러 실행하세요 🎉</div>
+      </div>
+    </div>
+  `;
+
+  document.body.innerHTML = `
+    <div style="
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    ">
+      <div style="
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      ">
+        <div style="font-size: 64px; margin-bottom: 20px;">🎓</div>
+        <h1 style="font-size: 22px; color: #2c3e50; margin-bottom: 10px;">
+          한성대학교<br>일학습병행 앱 설치
+        </h1>
+        <p style="font-size: 14px; color: #7f8c8d; margin-bottom: 30px;">
+          아래 안내에 따라 앱을 설치해주세요
+        </p>
+        
+        <div style="
+          background: #fff3cd;
+          border-radius: 10px;
+          padding: 12px 15px;
+          font-size: 13px;
+          color: #856404;
+          margin-bottom: 20px;
+        ">
+          ${isIOS ? '📱 Safari 브라우저에서만 설치 가능합니다' : '📱 Chrome 브라우저에서만 설치 가능합니다'}
+        </div>
+
+        <div style="text-align: left;">
+          ${isIOS ? iosSteps : androidSteps}
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 12px;
+      }
+      .step-number {
+        background: #2F80ED;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .step-content { flex: 1; }
+      .step-title {
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 4px;
+        font-size: 15px;
+      }
+      .step-desc {
+        font-size: 13px;
+        color: #7f8c8d;
+      }
+    </style>
+  `;
+}
+  
+  </script>
+
+  <!-- </body> 태그 바로 위에 추가 -->
+<script>
+// ========== OneSignal 푸시 알림 ==========
+async function initPushNotification() {
+  try {
+    console.log('푸시 초기화 시작');
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      console.log('OneSignal 준비됨');
+
+      // 학번만 등록
+      if (currentUser && currentUser.studentId) {
+        await OneSignal.login(String(currentUser.studentId));
+        console.log('학번 등록 완료');
+      }   
+    });
+
+  } catch(e) {
+    console.log('푸시 초기화 실패:', e);
+  }
+}
+</script>
+  <!-- 파일 미리보기 모달 -->
+<div id="filePreviewModal" class="modal">
+  <div class="modal-content" style="max-width: 800px; width: 95%;">
+    <div class="modal-header">
+      <h3 id="previewTitle">미리보기</h3>
+      <button class="modal-close" onclick="closeModal('filePreviewModal')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 0;">
+      <iframe id="previewFrame" 
+              style="width: 100%; height: 70vh; border: none;">
+      </iframe>
+    </div>
+  </div>
+</div>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(reg) {
+        // 새 버전 감지시 자동 업데이트
+        reg.onupdatefound = function() {
+          const newWorker = reg.installing;
+          newWorker.onstatechange = function() {
+            if (newWorker.state === 'activated') {
+              window.location.reload();
+            }
+          };
+        };
+      });
+  }
+</script>
+  
+</body>
+</html>
