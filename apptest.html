@@ -2132,8 +2132,8 @@ async function requestPushPermission() {
   }
 }
     
-    // ========== MY 페이지 ==========
- async function showMyPage(pushPage = 1) {
+// ========== MY 페이지 ==========
+async function showMyPage(pushPage = 1) {
   document.getElementById('mainContent').innerHTML = `
     <div class="card">
       <h3>👤 내 정보</h3>
@@ -2157,10 +2157,6 @@ async function requestPushPermission() {
       <div id="notificationList"><div class="loading">로딩중...</div></div>
     </div>
   `;
-
-  const result = await callAPI('getPushHistory', {
-    studentId: currentUser.studentId
-  });
 
   const target = document.getElementById('notificationList');
 
@@ -2186,7 +2182,6 @@ async function requestPushPermission() {
   updateMyBadge();
   renderNotifications(result.data, pushPage);
 }
-
 // ✅ 알림 렌더링 함수 (showMyPage 바로 아래 추가)
 function renderNotifications(allData, pushPage = 1) {
   const target = document.getElementById('notificationList');
