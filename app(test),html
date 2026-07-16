@@ -891,11 +891,16 @@ function logout() {
 }
 
     // ========== 탭 전환 ==========
-   function switchTab(event, tab) {
-  // 로그인 안된 상태면 home 포함 모두 로그인으로
+function switchTab(event, tab) {
   if (!currentUser) {
     showLoginModal();
     return;
+  }
+
+  // ✅ 탭 이동시 상담 자동갱신 타이머 정리
+  if (consultingRefreshTimer) {
+    clearInterval(consultingRefreshTimer);
+    consultingRefreshTimer = null;
   }
   
   currentTab = tab;
@@ -1004,6 +1009,15 @@ callAPI('getActiveSurvey').then(surveyResult => {
   if (cachedNotices && !noticesExpired) {
     // 캐시 즉시 표시
     displayNoticeList(JSON.parse(cachedNotices).slice(0, 3), 'recentNotices');
+    // ✅ 백그라운드에서 조용히 갱신
+    callAPI('getNotices').then(noticesResult => {
+      if (noticesResult.success) {
+        localStorage.setItem('cache_notices', JSON.stringify(noticesResult.data));
+        localStorage.setItem('cache_notices_time', Date.now().toString());
+        const el = document.getElementById('recentNotices');
+        if (el) displayNoticeList(noticesResult.data.slice(0, 3), 'recentNotices');
+      }
+    }).catch(e => console.log('공지 백그라운드 갱신 실패:', e));
   } else {
     // 새로 받아오기
     try {
@@ -1022,8 +1036,7 @@ callAPI('getActiveSurvey').then(surveyResult => {
   checkPushStatus();
   }
 }
-    clearInterval(
-  consultingRefreshTimer
+
 );
     // ========== 공지사항 ==========
 async function showNotices() {
@@ -2153,27 +2166,46 @@ async function requestPushPermission() {
 
   const target = document.getElementById('notificationList');
 
+  // ✅ 캐시 먼저 즉시 표시
+  const cachedNoti = localStorage.getItem('cache_notifications');
+  if (cachedNoti) {
+    renderNotifications(JSON.parse(cachedNoti), pushPage);
+  }
+
+  // ✅ 백그라운드에서 최신 데이터 갱신
+  const result = await callAPI('getPushHistory', {
+    studentId: currentUser.studentId
+  });
+
   if (!result.success || result.data.length === 0) {
+    if (!cachedNoti) {
+      target.innerHTML = '<div class="empty">알림이 없습니다</div>';
+    }
+    return;
+  }
+
+  localStorage.setItem('cache_notifications', JSON.stringify(result.data));
+  updateMyBadge();
+  renderNotifications(result.data, pushPage);
+}
+
+// ✅ 알림 렌더링 함수 (showMyPage 바로 아래 추가)
+function renderNotifications(allData, pushPage = 1) {
+  const target = document.getElementById('notificationList');
+  if (!target) return;
+
+  if (allData.length === 0) {
     target.innerHTML = '<div class="empty">알림이 없습니다</div>';
     return;
   }
 
-   // ✅ 알림 캐시 저장 및 배지 업데이트
-localStorage.setItem('cache_notifications', JSON.stringify(result.data));
-updateMyBadge();
-   
   const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
-  const allData = result.data;
-
-  // 페이지네이션 계산
   const pageSize = 10;
   const totalPages = Math.ceil(allData.length / pageSize);
   const startIndex = (pushPage - 1) * pageSize;
   const pageData = allData.slice(startIndex, startIndex + pageSize);
 
   let html = '';
-
-  // 알림 목록
   pageData.forEach(push => {
     const isRead = readList.includes(String(push['번호']));
     html += `
@@ -2181,8 +2213,8 @@ updateMyBadge();
            onclick="markNotificationRead('${push['번호']}')"
            style="background: ${isRead ? 'white' : '#f0f7ff'};">
         <div style="display: flex; align-items: center; gap: 8px;">
-          ${!isRead ? 
-            '<span style="width:8px; height:8px; background:#e74c3c; border-radius:50%; display:inline-block; flex-shrink:0;"></span>' : 
+          ${!isRead ?
+            '<span style="width:8px; height:8px; background:#e74c3c; border-radius:50%; display:inline-block; flex-shrink:0;"></span>' :
             '<span style="width:8px; height:8px; display:inline-block; flex-shrink:0;"></span>'
           }
           <div style="flex: 1;">
@@ -2190,7 +2222,7 @@ updateMyBadge();
             <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 4px;">${push['내용']}</div>
             <div style="font-size: 12px; color: #95a5a6;">
               ${formatDate(push['발송일시'])}
-              ${push['대상'] === '그룹' ? 
+              ${push['대상'] === '그룹' ?
                 '<span class="badge-category" style="margin-left:6px;">' + push['대상그룹'] + '</span>' : ''}
             </div>
           </div>
@@ -2199,13 +2231,8 @@ updateMyBadge();
     `;
   });
 
-  // 페이지네이션 버튼
   if (totalPages > 1) {
-    html += `
-      <div style="display: flex; justify-content: center; align-items: center; 
-                  gap: 8px; padding: 15px 0;">
-    `;
-
+    html += `<div style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 15px 0;">`;
     for (let i = 1; i <= totalPages; i++) {
       html += `
         <button onclick="showMyPage(${i})"
@@ -2217,13 +2244,11 @@ updateMyBadge();
         </button>
       `;
     }
-
     html += `</div>`;
   }
 
   target.innerHTML = html;
 }
-
 function markNotificationRead(id) {
   const readList = JSON.parse(localStorage.getItem('read_notifications') || '[]');
   if (!readList.includes(String(id))) {
