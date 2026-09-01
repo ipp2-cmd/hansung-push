@@ -1430,6 +1430,11 @@ function displayFileList(files, targetId) {
   
   let html = '';
   files.forEach((file, index) => {
+    // ⭕ 다운로드 전용 주소로 자동 변환 (미리보기 주소는 그대로 유지)
+    const downloadUrl = file['파일URL']
+      .replace(/\/view.*/, '')
+      .replace('https://drive.google.com/file/d/', 'https://drive.google.com/uc?export=download&id=');
+    
     html += `
       <div class="list-item">
         <div class="item-title">📄 ${file['제목']}</div>
